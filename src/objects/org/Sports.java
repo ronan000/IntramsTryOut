@@ -1,4 +1,4 @@
-package objects.table;
+package objects.org;
 
 public class Sports {
     private int sportsID;
@@ -44,7 +44,8 @@ public class Sports {
         this.sportType = sportType;
     }
 
-    public String toString(){
-        return sportsID  + ", " + sportsDesc + ", " + sportsCat + ", " + sportType;
+    @Override
+    public String toString() {
+        return String.format("%-15s%-15s%-15s%-15s%n", sportsID, sportsDesc, sportsCat, sportType);
     }
 }

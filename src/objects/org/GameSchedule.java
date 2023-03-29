@@ -1,4 +1,4 @@
-package objects.table;
+package objects.org;
 
 import java.sql.Time;
 import java.util.Date;

@@ -25,10 +25,9 @@ public class ListOfSports {
     private JTable table;
     private JTable model;
     static List<Sports> sportsList;
-
     public ListOfSports() throws IOException {
         sportsList = new ArrayList<>();
-        String DB_URL = "jdbc:mysql://localhost:3306/tryout";
+        String DB_URL = "jdbc:mysql://localhost:3306/tryouts";
         String USER = "root";
         String PASS = "";
         String QUERY = "SELECT * FROM sport";

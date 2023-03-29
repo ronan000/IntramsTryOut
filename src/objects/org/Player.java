@@ -1,4 +1,4 @@
-package objects.table;
+package objects.org;
 
 public class Player {
     private int coachID, playerID, sportID, studentID;

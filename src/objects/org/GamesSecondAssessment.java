@@ -1,4 +1,4 @@
-package objects.table;
+package objects.org;
 
 public class GamesSecondAssessment {
     private int gameID, gSecondID, sportID;
