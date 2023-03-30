@@ -1,21 +1,28 @@
 package objects;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Student {
     private int ID;
-    private String firstName;
-    private String lastName;
-    private String course;
-    private String gender;
-    private String sport;
+    private String firstName, lastName, course, gender;
+    private Connection con = null;
+    private PreparedStatement statement = null;
+    private ResultSet resultSet = null;
+
 
     public Student() {}
-    public Student(int ID, String firstName, String lastName, String course, String gender, String sport){
+    public Student(int ID, String firstName, String lastName, String gender, String course){
         this.ID = ID;
         this.firstName = firstName;
         this.lastName = lastName;
         this.course = course;
         this.gender = gender;
-        this.sport = sport;
+
     }
 
     public int getID() {
@@ -32,10 +39,6 @@ public class Student {
 
     public String getCourse() {
         return course;
-    }
-
-    public String getSport() {
-        return sport;
     }
 
     public String getGender() {
@@ -62,7 +65,35 @@ public class Student {
         this.gender = gender;
     }
 
-    public void setSport(String sport) {
-        this.sport = sport;
+
+    public void getStudentsList() throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
+        List<Student> students = new ArrayList<>();
+        String query = "SELECT * FROM STUDENT";
+        try {
+            con = SetConnection.getConnection();
+            statement = con.prepareStatement(query);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Student s = new Student(Integer.valueOf(resultSet.getString("studentID")), resultSet.getString("fFirstName"), resultSet.getString("LastName"), resultSet.getString("gender"), resultSet.getString("course"));
+                students.add(s);
+            }
+            System.out.printf("%-15s%-25s%-20s%-10s%-15s%n", "StudentID", "FirstName", "LASTNAME", "Gender", "Course");
+            students.forEach((sp) -> System.out.print(sp));
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%-15s%-25s%-20s%-10s%-15s%n", ID, firstName, lastName.toUpperCase(), gender, course);
+
+    }
+
+    public static void main(String[] args) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+        Student s = new Student();
+        s.getStudentsList();
     }
 }

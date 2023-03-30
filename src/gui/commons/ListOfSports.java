@@ -9,7 +9,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +26,7 @@ public class ListOfSports {
     static List<Sports> sportsList;
     public ListOfSports() throws IOException {
         sportsList = new ArrayList<>();
-        String DB_URL = "jdbc:mysql://localhost:3306/tryouts";
+        /*String DB_URL = "jdbc:mysql://localhost:3306/tryouts";
         String USER = "root";
         String PASS = "";
         String QUERY = "SELECT * FROM sport";
@@ -52,6 +51,7 @@ public class ListOfSports {
                 sportsList.add(new Sports(ID, desc, cat, type));
             }
 
+
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {
@@ -60,7 +60,7 @@ public class ListOfSports {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
-        }
+        }*/
 
         image = new ImageIcon("src/res/images/background.jpg");
         panel = new ImagePanel(image.getImage());
@@ -169,4 +169,5 @@ public class ListOfSports {
     public static void main(String[] args) throws IOException {
         ListOfSports list = new ListOfSports();
     }
+
 }

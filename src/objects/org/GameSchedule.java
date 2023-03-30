@@ -75,8 +75,8 @@ public class GameSchedule {
         }
     }
 
-
     public String toString(){
         return gameID  + ", " + playerID  + ", " + sportID + ", " + gDate + ", " + gTime;
     }
+
 }
