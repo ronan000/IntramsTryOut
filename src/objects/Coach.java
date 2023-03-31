@@ -2,7 +2,7 @@ package objects;
 
 public class Coach {
     private int coachID;
-    private String firstName, lastName, sports, category;
+    private String firstName, lastName, sports;
 
     public Coach(){}
     public Coach(int coachID, String firstName, String lastName, String sports, String category){
@@ -10,7 +10,6 @@ public class Coach {
         this.firstName = firstName;
         this.lastName = lastName;
         this.sports = sports;
-        this.category = category;
 
     }
 
@@ -30,10 +29,6 @@ public class Coach {
         this.sports = sports;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
     public int getCoachID() {
         return coachID;
     }
@@ -50,7 +45,4 @@ public class Coach {
         return sports;
     }
 
-    public String getCategory() {
-        return category;
-    }
 }

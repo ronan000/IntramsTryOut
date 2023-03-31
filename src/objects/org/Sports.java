@@ -14,6 +14,7 @@ public class Sports {
     private Connection con = null;
     private PreparedStatement statement = null;
     private ResultSet resultSet = null;
+    List<Sports> sports = new ArrayList<>();
 
     public Sports(){}
     public Sports(int sportsID, String sportsDesc, String sportsCat, String sportType){
@@ -55,7 +56,6 @@ public class Sports {
         this.sportType = sportType;
     }
     public void getSportsList() throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
-        List<Sports> sports = new ArrayList<>();
         String query = "SELECT * FROM SPORT";
         try {
             con = SetConnection.getConnection();
@@ -74,11 +74,24 @@ public class Sports {
 
     }
 
+    public String getSportsDesc(int sportsID) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+        String name = null;
+        getSportsList();
+        Iterator<Sports> iterator = sports.iterator();
+        while(iterator.hasNext()){
+            Sports sp = iterator.next();
+            if(sportsID == sp.getSportsID()){
+                name = sp.getSportsDesc();
+            }
+        }
+        return name;
+    }
+
     @Override
     public String toString() {
         return String.format("%-15s%-15s%-15s%-15s%n", sportsID, sportsDesc, sportsCat, sportType);
     }
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         Sports s = new Sports();
         try {
             s.getSportsList();
@@ -89,6 +102,21 @@ public class Sports {
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }*/
+
+    public static void main(String[] args) {
+        Sports s = new Sports();
+        try {
+            System.out.println(s.getSportsDesc(1));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }

@@ -92,8 +92,4 @@ public class Student {
 
     }
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
-        Student s = new Student();
-        s.getStudentsList();
-    }
 }

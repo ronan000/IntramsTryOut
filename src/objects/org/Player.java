@@ -7,23 +7,27 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Player {
-    private int coachID, playerID, sportID, studentID;
+    private int coachID , sportID, studentID;
+    private String playerID;
     private Connection con = null;
     private PreparedStatement statement = null;
     private ResultSet resultSet = null;
+    List<Player> players = new ArrayList<>();
 
     public Player(){}
 
-    public Player(int playerID, int studentID, int sportID, int coachID){
+    public Player(String  playerID, int studentID, int sportID, int coachID){
         this.playerID = playerID;
         this.studentID = studentID;
         this.sportID = sportID;
         this.coachID = coachID;
     }
 
-    public int getPlayerID() {
+    public String getPlayerID() {
         return playerID;
     }
 
@@ -39,7 +43,7 @@ public class Player {
         return studentID;
     }
 
-    public void setPlayerID(int playerID) {
+    public void setPlayerID(String playerID) {
         this.playerID = playerID;
     }
 
@@ -90,6 +94,7 @@ public class Player {
         return counter;
     }
 
+    //ON-HOLD
     public void acceptPlayers(String studentID){
         String pID = generatePlayerID();
         String query = "INSERT INTO `playerlist` (`playerID`, `studentID`, `coachID`, `sportID`) VALUES (?, ?, ?, ?);";
@@ -105,14 +110,47 @@ public class Player {
         }
     }
 
+    public String showPlayerList() {
+        String query = "SELECT * FROM PLAYERLIST";
+        try {
+            con = SetConnection.getConnection();
+            statement = con.prepareStatement(query);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Player p = new Player(resultSet.getString("playerID"), Integer.valueOf(resultSet.getString("studentID")), Integer.valueOf(resultSet.getString("coachID")), Integer.valueOf(resultSet.getString("sportID")));
+                players.add(p);
+            }
+            System.out.printf("%-15s%-15s%-15s%-15s%n", "PlayerID", "StudentID", "CoachID", "SportID");
+            players.forEach((p) -> System.out.print(p));
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return "";
+    }
+    public void removePlayer(String playerID){
+        String query = "DELETE FROM PLAYERLIST WHERE PLAYERID = ?";
+        try {
+            con = SetConnection.getConnection();
+            statement = con.prepareStatement(query);
+            statement.setString(1, playerID);
+            resultSet = statement.executeQuery();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println();
+
+    }
+
     @Override
     public String toString() {
-        return playerID + ", " + studentID + ", " + sportID + ", " + coachID;
+        return String.format("%-15s%-15s%-15s%-15s%n", playerID, studentID, coachID, sportID);
     }
 
     public static void main(String[] args) {
         Player p = new Player();
-        System.out.println(p.generatePlayerID());
+        //System.out.println(p.generatePlayerID());
         //System.out.println(p.countPlayers());
+        System.out.println(p.showPlayerList());
     }
 }
