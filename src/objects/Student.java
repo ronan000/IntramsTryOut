@@ -173,8 +173,9 @@ public class Student {
             try{
                 con = SetConnection.getConnection();
                 statement = con.prepareStatement(query);
-                statement.setString(2, fName);
-                statement.setString(3, lName);
+                statement.setString(1, fName);
+                statement.setString(2, lName);
+                statement.setInt(3, studentID);
                 statement.executeUpdate();
                 System.out.println("Student's name is successfully updated.");
             } catch (SQLException e) {
@@ -187,6 +188,9 @@ public class Student {
         if(studentExist(studentID) == false){
             System.out.println("There is no student with ID number " + studentID + " in the registration database.");
         }
+        else if (studentExist(updated) == true){
+            System.out.println(studentID + " already exist in the database.");
+        }
         else{
             PreparedStatement statement = null;
             ResultSet resultSet = null;
@@ -195,6 +199,7 @@ public class Student {
                 con = SetConnection.getConnection();
                 statement = con.prepareStatement(query);
                 statement.setInt(1, updated);
+                statement.setInt(2, studentID);
                 statement.executeUpdate();
                 System.out.println("ID number successfully updated.");
             } catch (SQLException e) {
@@ -203,7 +208,7 @@ public class Student {
         }
     }
 
-    /*public void updateGender(int studentID, String gender){
+    public void updateGender(int studentID, String gender){
         Gender g = Gender.valueOf(gender);
         if(studentExist(studentID) == false){
             System.out.println("There is no student with ID number " + studentID + " in the registration database.");
@@ -215,18 +220,26 @@ public class Student {
             try{
                 con = SetConnection.getConnection();
                 statement = con.prepareStatement(query);
-                statement.setObject(4, gender, Types.OTHER);
+                statement.setString(1, gender);
+                statement.setInt(2, studentID);
                 statement.executeUpdate();
-                System.out.println("ID number successfully updated.");
+                System.out.println("Student gender successfully edited.");
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         }
-    }*/
+    }
 
     @Override
     public String toString() {
         return String.format("%-15s%-25s%-20s%-10s%-15s%n", ID, firstName, lastName.toUpperCase(), gender, course);
+    }
 
+    public static void main(String[] args) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+        Student s = new Student();
+        /*s.updateID(2200126, 2200126);
+        s.getStudentsList();*/
+        s.updateName(2200126, "Jieben Kayla", "Abaya");
+        s.getStudentsList();
     }
 }

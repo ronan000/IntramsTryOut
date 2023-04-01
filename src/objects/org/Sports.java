@@ -66,7 +66,7 @@ public class Sports {
                 Sports s = new Sports(Integer.valueOf(resultSet.getString("sportID")), resultSet.getString("sportDescription"), resultSet.getString("sCategory"), resultSet.getString("sType"));
                 sports.add(s);
             }
-            System.out.printf("%-15s%-15s%-15s%-15s%n", "sportsID", "sportsDesc", "sportsCat", "sportType");
+            System.out.printf("%-15s%-15s%-15s%-15s%n", "SportsID", "SportsDesc", "SportsCat", "SportType");
             sports.forEach((sp) -> System.out.print(sp));
 
         } catch (SQLException e) {

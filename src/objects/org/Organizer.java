@@ -52,13 +52,14 @@ public class Organizer {
     }
 
     public void organizerMenu() {
-        System.out.println("\t\t\t\tORGANIZER MENU\n" +
+        System.out.println("\n\t\t\t\tORGANIZER MENU\n" +
                 "[1] Students\n" +
                 "[2] Players\n" +
-                "[3] Coaches\n" +
-                "[4] Sports\n" +
-                "[5] Game Schedule\n" +
-                "[6] Exit\n" +
+                "[3] Teams\n" +
+                "[4] Coaches\n" +
+                "[5] Sports\n" +
+                "[6] Game Schedule\n" +
+                "[7] Exit\n" +
                 "Select the number of table: ");
         String t = keyboard.nextLine();
         switchTables(t);
@@ -72,19 +73,22 @@ public class Organizer {
                 playerSubmenu();
                 break;
             case "3":
-                coachSubmenu();
+                teamSubmenu();
                 break;
             case "4":
-                sportsSubmenu();
+                coachSubmenu();
                 break;
             case "5":
+                sportsSubmenu();
+                break;
+            case "6":
                 try {
                     GameSchedule gameSchedule = new GameSchedule();
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
                 break;
-            case "6":
+            case "7":
                 System.out.println("Thank you for using the app.");
                 System.exit(0);
                 break;
@@ -159,8 +163,9 @@ public class Organizer {
         System.out.println("\t\tPlayer Table\n" +
                 "[1] Accept Student\n" +
                 "[2] Show List of Players\n" +
-                "[3] Remove a Player\n" +
-                "[4] Back\n" +
+                "[3] Search a Player\n" +
+                "[4] Remove a Player\n" +
+                "[5] Back\n" +
                 "Enter number of option: ");
         playerCRUD(keyboard.nextLine());
     }
@@ -177,6 +182,8 @@ public class Organizer {
                 player.setSportID(Integer.parseInt(keyboard.nextLine()));
                 System.out.print("Enter Coach ID: ");
                 player.setCoachID(Integer.parseInt(keyboard.nextLine()));
+                System.out.print("Enter Team ID: ");
+                player.setTeamID(Integer.parseInt(keyboard.nextLine()));
                 player.acceptPlayers(player);
                 organizerMenu();
                 break;
@@ -186,12 +193,17 @@ public class Organizer {
                 organizerMenu();
                 break;
             case "3":
+                System.out.println("SEARCH PLAYER");
+                System.out.print("Enter the player ID to search: ");
+                System.out.println(player.searchPlayer(keyboard.nextLine()));
+                organizerMenu();
+                break;
+            case "4":
                 System.out.println("REMOVE PLAYER");
                 System.out.println("Enter player number to remove: ");
                 player.removePlayer(keyboard.nextLine());
                 organizerMenu();
-                break;
-            case "4":
+            case "5":
                 organizerMenu();
                 break;
             default:
@@ -200,6 +212,54 @@ public class Organizer {
                 break;
         }
 
+    }
+
+    public void teamSubmenu(){
+        System.out.println("\t\tTeams Table\n" +
+                "[1] Create Team\n" +
+                "[2] Show List of Teams\n" +
+                "[3] Search Team\n" +
+                "[4] Remove a Team\n" +
+                "[5] Back\n" +
+                "Enter the number of option: ");
+        teamCRUD(keyboard.nextLine());
+    }
+
+    public void teamCRUD(String option){
+        Team team = new Team();
+        switch (option){
+            case "1":
+                System.out.println("ADD TEAM");
+                team.setTeamID(team.generateTeamID());
+                System.out.print("Enter team name: ");
+                team.setTeamName(keyboard.nextLine());
+                team.addTeam(team);
+                organizerMenu();
+                break;
+            case "2":
+                System.out.println("SHOW LIST OF TEAMS");
+                team.showTeamList();
+                organizerMenu();
+                break;
+            case "3":
+                System.out.println("SEARCH TEAM");
+                System.out.print("Search team name: ");
+                System.out.println(team.searchTeam(keyboard.nextLine()));
+                organizerMenu();
+                break;
+            case "4":
+                System.out.println("REMOVE A TEAM");
+                System.out.print("Enter the team name to remove: ");
+                team.removeTeam(keyboard.nextLine());
+                organizerMenu();
+                break;
+            case "5":
+                organizerMenu();
+                break;
+            default:
+                System.out.println("Invalid input.");
+                organizerMenu();
+        }
     }
 
     public void coachSubmenu(){
@@ -310,6 +370,4 @@ public class Organizer {
         }
 
     }
-
-
 }
