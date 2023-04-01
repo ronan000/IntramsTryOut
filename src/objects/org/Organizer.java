@@ -103,8 +103,9 @@ public class Organizer {
         System.out.println("\t\tStudent Table\n" +
                 "[1] Register Student\n" +
                 "[2] Show List of Applicant Students\n" +
-                "[3] Remove Applicant Student\n" +
-                "[4] Back\n" +
+                "[3] Update Student Data\n" +
+                "[4] Remove Applicant Student\n" +
+                "[5] Back\n" +
                 "Enter the number of option: ");
         studentCRUD(keyboard.nextLine());
     }
@@ -142,21 +143,32 @@ public class Organizer {
                 organizerMenu();
                 break;
             case "3":
+                System.out.println("UPDATE STUDENT DATA");
+                System.out.print("Enter old ID number: ");
+                student.setID(Integer.parseInt(String.valueOf(keyboard.nextInt())));
+                System.out.print("Enter first name: ");
+                student.setFirstName(keyboard.nextLine());
+                System.out.print("Enter last name: ");
+                student.setLastName(keyboard.nextLine());
+                System.out.print("Enter gender: ");
+                student.setGender(keyboard.nextLine());
+                System.out.print("Enter course: ");
+                student.setCourse(keyboard.nextLine());
+                organizerMenu();
+            case "4":
                 System.out.println("REMOVE APPLICANT STUDENT");
                 System.out.print("Enter the ID Number of student to remove: ");
                 student.removeRegistration(Integer.parseInt(keyboard.nextLine()));
                 organizerMenu();
                 break;
-            case "4":
+            case "5":
                 organizerMenu();
             break;
             default:
                 System.out.println("Invalid input.");
                 organizerMenu();
                 break;
-
         }
-
     }
 
     public void playerSubmenu(){

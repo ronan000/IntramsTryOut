@@ -62,10 +62,6 @@ public class Student {
         this.gender = gender;
     }
 
-    enum Gender{
-        Female,
-        Male
-    }
     public boolean studIDVerifier(int studentID){
         int count = 0;
         String toInt = Integer.toString(studentID);
@@ -84,6 +80,9 @@ public class Student {
         if (studentExist(student.getID()) == true){
             System.out.println("Student " + student.getID() +  " is already registered.");
         }
+        else if(genderVerifier(student.getGender()) == false){
+            System.out.println("Invalid gender input.");
+        }
         else if (studIDVerifier(student.getID()) == false){
             System.out.println("Invalid ID number.");
         }
@@ -92,11 +91,11 @@ public class Student {
             try {
                 con = SetConnection.getConnection();
                 statement = con.prepareStatement(query);
-                statement.setString(1, String.valueOf(student.getID()));
-                statement.setString(2, String.valueOf(student.getFirstName()));
-                statement.setString(3, String.valueOf(student.getLastName()));
-                statement.setString(4, String.valueOf(student.getGender()));
-                statement.setString(5, String.valueOf(student.getCourse()));
+                statement.setInt(1, student.getID());
+                statement.setString(2, student.getFirstName());
+                statement.setString(3, student.getLastName());
+                statement.setString(4, student.getGender());
+                statement.setString(5, student.getCourse());
                 statement.execute();
                 System.out.println(student.getFirstName()  + " " + student.getLastName()  + " is successfully registered as applicant for tryout.");
             } catch (SQLException e) {
@@ -122,7 +121,9 @@ public class Student {
         }
     }
 
-
+    public boolean genderVerifier(String gender){
+        return gender.equalsIgnoreCase("female") || gender.equalsIgnoreCase("male");
+    }
     public boolean studentExist(int studentID){
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -162,73 +163,32 @@ public class Student {
         }
     }
 
-    public void updateName(int studentID, String fName, String lName){
-        if(studentExist(studentID) == false){
-            System.out.println("There is no student with ID number " + studentID + " in the registration database.");
+    public void updateStudent(Student student, int newID){
+        if(studentExist(student.getID()) == false){
+            System.out.println("There is no student with ID number " + student.getID() + " in the registration database.");
         }
-        else{
-            PreparedStatement statement = null;
-            ResultSet resultSet = null;
-            String query = "UPDATE STUDENT SET FFIRSTNAME = ?, LASTNAME = ?  WHERE STUDENTID = ? ";
+        else if(genderVerifier(student.getGender()) == false){
+            System.out.println("Invalid gender input.");
+        }
+        else {
+            String query = "UPDATE STUDENT SET STUDENTID = ?, FFIRSTNAME = ?, LASTNAME = ?, GENDER = ?, COURSE = ?  WHERE STUDENTID = ? ";
             try{
                 con = SetConnection.getConnection();
                 statement = con.prepareStatement(query);
-                statement.setString(1, fName);
-                statement.setString(2, lName);
-                statement.setInt(3, studentID);
+                statement.setInt(6, student.getID());
+                statement.setString(2, student.getFirstName());
+                statement.setString(3, student.getLastName());
+                statement.setString(4, student.getGender());
+                statement.setString(5, student.getCourse());
+                statement.setInt(1, newID);
                 statement.executeUpdate();
-                System.out.println("Student's name is successfully updated.");
+                System.out.println("Data for Student " + student.getID() + " is successfully updated.");
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    public void updateID(int studentID, int updated){
-        if(studentExist(studentID) == false){
-            System.out.println("There is no student with ID number " + studentID + " in the registration database.");
-        }
-        else if (studentExist(updated) == true){
-            System.out.println(studentID + " already exist in the database.");
-        }
-        else{
-            PreparedStatement statement = null;
-            ResultSet resultSet = null;
-            String query = "UPDATE STUDENT SET STUDENTID = ? WHERE STUDENTID = ? ";
-            try{
-                con = SetConnection.getConnection();
-                statement = con.prepareStatement(query);
-                statement.setInt(1, updated);
-                statement.setInt(2, studentID);
-                statement.executeUpdate();
-                System.out.println("ID number successfully updated.");
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    public void updateGender(int studentID, String gender){
-        Gender g = Gender.valueOf(gender);
-        if(studentExist(studentID) == false){
-            System.out.println("There is no student with ID number " + studentID + " in the registration database.");
-        }
-        else{
-            PreparedStatement statement = null;
-            ResultSet resultSet = null;
-            String query = "UPDATE STUDENT SET GENDER = ? WHERE STUDENTID = ? ";
-            try{
-                con = SetConnection.getConnection();
-                statement = con.prepareStatement(query);
-                statement.setString(1, gender);
-                statement.setInt(2, studentID);
-                statement.executeUpdate();
-                System.out.println("Student gender successfully edited.");
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
 
     @Override
     public String toString() {
@@ -239,7 +199,6 @@ public class Student {
         Student s = new Student();
         /*s.updateID(2200126, 2200126);
         s.getStudentsList();*/
-        s.updateName(2200126, "Jieben Kayla", "Abaya");
         s.getStudentsList();
     }
 }

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Coach {
-    private int coachID;
+    private int coachID, sportID;
     private Connection con = null;
     private String firstName, lastName;
     private PreparedStatement statement = null;
@@ -16,10 +16,11 @@ public class Coach {
     private List<Coach> coaches = new ArrayList<>();
 
     public Coach(){}
-    public Coach(int coachID, String firstName, String lastName){
+    public Coach(int coachID, String firstName, String lastName, int sportID){
         this.coachID = coachID;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.sportID = sportID;
 
     }
 
@@ -35,6 +36,13 @@ public class Coach {
         this.lastName = lastName;
     }
 
+    public void setSportID(int sportID) {
+        this.sportID = sportID;
+    }
+
+    public int getSportID() {
+        return sportID;
+    }
 
     public int getCoachID() {
         return coachID;
@@ -72,10 +80,10 @@ public class Coach {
             statement = con.prepareStatement(query);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                Coach c = new Coach(Integer.parseInt(resultSet.getString("coachID")), resultSet.getString("firstName"), resultSet.getString("lastName"));
+                Coach c = new Coach(resultSet.getInt("coachID"), resultSet.getString("firstName"), resultSet.getString("lastName"), resultSet.getInt(sportID));
                 coaches.add(c);
             }
-            System.out.printf("%-15s%-25s%-20s%n", "CoachID", "FirstName", "LASTNAME");
+            System.out.printf("%-15s%-25s%-20s%-12s%n", "CoachID", "FirstName", "LASTNAME", "SporstID");
             coaches.forEach((co) -> System.out.print(co));
 
         } catch (SQLException e) {
@@ -104,15 +112,36 @@ public class Coach {
             System.out.println(coach.getFirstName() + " " + coach.getLastName() + " is already registered as a coach.");
         }
         else {
-            String query = "INSERT INTO `coach` (`coachID`, `firstName`, `lastName`) VALUES (?, ?, ?);";
+            String query = "INSERT INTO `coach` (`coachID`, `firstName`, `lastName`, `sportID`) VALUES (?, ?, ?, ? );";
             try {
                 con = SetConnection.getConnection();
                 statement = con.prepareStatement(query);
-                statement.setString(1, String.valueOf(coach.generateCoachID()));
+                statement.setInt(1, coach.generateCoachID());
                 statement.setString(2, coach.getFirstName());
                 statement.setString(3, coach.getLastName());
+                statement.setInt(4, coach.getSportID());
                 statement.execute();
                 System.out.println("Coach " + coach.getFirstName() + " " + coach.getLastName()  + " is successfully added to the database.");
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+    public void updateCoach(Coach coach){
+        if(coachExists(coach.getCoachID()) == false){
+            System.out.println("There is no student with ID number " + coach.getCoachID() + " in the registration database.");
+        }
+        else{
+            String query = "UPDATE STUDENT SET FIRSTNAME = ?, LASTNAME = ?, SPORTID = ?  WHERE COACHID = ? ";
+            try{
+                con = SetConnection.getConnection();
+                statement = con.prepareStatement(query);
+                statement.setString(1, coach.getFirstName());
+                statement.setString(2, coach.getLastName());
+                statement.setInt(3, coach.getSportID());
+                statement.setInt(4, coach.getCoachID());
+                statement.executeUpdate();
+                System.out.println("Data for Student " + coach.getCoachID() + " is successfully updated.");
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -141,7 +170,7 @@ public class Coach {
 
     @Override
     public String toString() {
-        return String.format("%-15s%-25s%-20s%n", coachID, firstName, lastName.toUpperCase());
+        return String.format("%-15s%-25s%-20s%-12s%n", coachID, firstName, lastName.toUpperCase(), sportID);
     }
 
 }
