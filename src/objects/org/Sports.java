@@ -55,6 +55,7 @@ public class Sports {
     public void setSportType(String sportType) {
         this.sportType = sportType;
     }
+
     public void getSportsList() throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
         String query = "SELECT * FROM SPORT";
         try {
@@ -76,7 +77,7 @@ public class Sports {
 
     public String getSportsDesc(int sportsID) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
         String name = null;
-        getSportsList();
+        //getSportsList();
         Iterator<Sports> iterator = sports.iterator();
         while(iterator.hasNext()){
             Sports sp = iterator.next();
@@ -85,6 +86,29 @@ public class Sports {
             }
         }
         return name;
+    }
+    public int generateSportsID(){
+        int ID = countSports() + 1;
+        return ID;
+    }
+    public int countSports(){
+        int counter= 0;
+        String query = "SELECT COUNT(SPORTID) FROM SPORT";
+        try {
+            con = SetConnection.getConnection();
+            statement = con.prepareStatement(query);
+            resultSet = statement.executeQuery();
+            resultSet.next();
+            counter = resultSet.getInt(1);
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return counter;
+    }
+
+    public void addSports(Sports sports){
+
     }
 
     @Override
@@ -110,6 +134,7 @@ public class Sports {
         Sports s = new Sports();
         try {
             System.out.println(s.getSportsDesc(1));
+            System.out.println(s.countSports());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
