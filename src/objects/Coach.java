@@ -1,15 +1,25 @@
 package objects;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Coach {
     private int coachID;
-    private String firstName, lastName, sports;
+    private Connection con = null;
+    private String firstName, lastName;
+    private PreparedStatement statement = null;
+    private ResultSet resultSet = null;
+    private List<Coach> coaches = new ArrayList<>();
 
     public Coach(){}
-    public Coach(int coachID, String firstName, String lastName, String sports, String category){
+    public Coach(int coachID, String firstName, String lastName){
         this.coachID = coachID;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.sports = sports;
 
     }
 
@@ -25,9 +35,6 @@ public class Coach {
         this.lastName = lastName;
     }
 
-    public void setSports(String sports) {
-        this.sports = sports;
-    }
 
     public int getCoachID() {
         return coachID;
@@ -41,8 +48,131 @@ public class Coach {
         return lastName;
     }
 
-    public String getSports() {
-        return sports;
+    public int generateCoachID(){
+        int counter = 0;
+        String query = "SELECT COACHID FROM COACH ORDER BY COACHID DESC LIMIT 1";
+        try {
+            con = SetConnection.getConnection();
+            statement = con.prepareStatement(query);
+            resultSet = statement.executeQuery();
+            resultSet.next();
+            counter = resultSet.getInt(1);
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return counter + 1;
+
     }
 
+
+
+
+
+    public void getCoachList() throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
+        String query = "SELECT * FROM COACH";
+        try {
+            con = SetConnection.getConnection();
+            statement = con.prepareStatement(query);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Coach c = new Coach(Integer.parseInt(resultSet.getString("coachID")), resultSet.getString("firstName"), resultSet.getString("lastName"));
+                coaches.add(c);
+            }
+            System.out.printf("%-15s%-25s%-20s%n", "CoachID", "FirstName", "LASTNAME");
+            coaches.forEach((co) -> System.out.print(co));
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public boolean coachExists(int coachID){
+        String query = "SELECT * FROM COACH";
+        try {
+            con = SetConnection.getConnection();
+            statement = con.prepareStatement(query);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int  s = Integer.parseInt(resultSet.getString("coachID"));
+                if (s == coachID)
+                    return true;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
+
+    public void addCoach(Coach coach){
+        if(coachExists(coach.getCoachID()) == true){
+            System.out.println(coach.getFirstName() + " " + coach.getLastName() + " is already registered as a coach.");
+        }
+        else {
+            String query = "INSERT INTO `coach` (`coachID`, `firstName`, `lastName`) VALUES (?, ?, ?);";
+            try {
+                con = SetConnection.getConnection();
+                statement = con.prepareStatement(query);
+                statement.setString(1, String.valueOf(coach.getCoachID()));
+                statement.setString(2, coach.getFirstName());
+                statement.setString(3, coach.getLastName());
+                statement.execute();
+                System.out.println(coach.getCoachID());
+                System.out.println("Coach " + coach.getFirstName() + " " + coach.getLastName()  + " is successfully added to the database.");
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public void removeCoach(int coachID){
+        if(coachExists(coachID) == false){
+            System.out.println("There is no coach with an ID number " + coachID + " in the database" );
+        }
+        else {
+            PreparedStatement statement = null;
+            ResultSet resultSet = null;
+            String query = "DELETE FROM COACH WHERE COACHID = ?";
+            try {
+                con = SetConnection.getConnection();
+                statement = con.prepareStatement(query);
+                statement.setString(1, String.valueOf(coachID));
+                statement.execute();
+                System.out.println("A coach is successfully deleted from database.");
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%-15s%-25s%-20s%n", coachID, firstName, lastName.toUpperCase());
+    }
+
+
+    /*public static void main(String[] args) {
+        Coach c = new Coach();
+        try {
+            c.getCoachList();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }*/
+
+    public static void main(String[] args) {
+        Coach c = new Coach();
+       /* c.setCoachID(c.generateCoachID());
+        c.setLastName("Javier");
+        c.setFirstName("Jake");
+        c.addCoach(c);
+        System.out.println(c.coachExists(1101055));*/
+        c.removeCoach(1101020);
+
+    }
 }
