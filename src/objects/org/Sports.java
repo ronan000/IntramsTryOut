@@ -77,7 +77,7 @@ public class Sports {
 
     public String getSportsDesc(int sportsID) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
         String name = null;
-        //getSportsList();
+        getSportsList();
         Iterator<Sports> iterator = sports.iterator();
         while(iterator.hasNext()){
             Sports sp = iterator.next();
@@ -107,42 +107,98 @@ public class Sports {
         return counter;
     }
 
-    public void addSports(Sports sports){
-
+    public boolean sportsExists(int sporstID){
+        String query = "SELECT * FROM SPORT";
+        try{
+            con = SetConnection.getConnection();
+            statement = con.prepareStatement(query);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int ID = Integer.parseInt(resultSet.getString("sportID"));
+                if (ID == sporstID)
+                    return true;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
     }
+
+    public boolean sportsExists(int sportsID, String desc, String cat, String type){
+        String query = "SELECT * FROM SPORT";
+        try{
+            con = SetConnection.getConnection();
+            statement = con.prepareStatement(query);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                String d = resultSet.getString("sportDescription");
+                String c = resultSet.getString("sCategory");
+                String t = resultSet.getString("sType");
+                if (d.equalsIgnoreCase(desc) && c.equalsIgnoreCase(cat) && t.equalsIgnoreCase(type))
+                    return true;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
+
+    public void addSports(Sports sports){
+        if(sportsExists(sports.getSportsID(), sports.getSportsDesc(), sports.getSportsCat(), sports.getSportType()) == true){
+            System.out.println("Sports already exist in the database.");
+        }
+        else if (isTeamSports(sports.getSportsDesc(),sports.getSportType()) == false && sports.getSportType().equalsIgnoreCase("teams")){
+            System.out.println(sports.getSportsDesc() + " was assigned to invalid sports type.");
+        }
+
+        else{
+            String query = "INSERT INTO `sport` (`sportID`, `sportDescription`, `sCategory`, `sType`) VALUES (?, ?, ?, ?);";
+            try{
+                con = SetConnection.getConnection();
+                statement = con.prepareStatement(query);
+                statement.setString(1, String.valueOf(sports.getSportsID()));
+                statement.setString(2, String.valueOf(sports.getSportsDesc()));
+                statement.setString(3, String.valueOf(sports.getSportsCat()));
+                statement.setString(4, String.valueOf(sports.getSportType()));
+                statement.execute();
+                System.out.println("Sports " + sports.getSportsDesc() + " for " + sports.getSportsCat() + " is successfully added to the database.");
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public boolean isTeamSports(String sportsDesc, String sportType){
+       if(sportsDesc.equalsIgnoreCase("basketball") && sportsDesc.equalsIgnoreCase("volleyball") && sportsDesc.equalsIgnoreCase("sepak takraw")){
+           return true;
+       }
+        return false;
+    }
+
+    public void removeSports(int sportsID){
+        if(sportsExists(sportsID) == false){
+            System.out.println("Sports with that ID number " + sportsID + " does not exist in the database.");
+        }
+        else{
+            PreparedStatement statement = null;
+            ResultSet resultSet = null;
+            String query = "DELETE FROM SPORT WHERE SPORTID = ?";
+            try {
+                con = SetConnection.getConnection();
+                statement = con.prepareStatement(query);
+                statement.setString(1, String.valueOf(sportsID));
+                statement.execute();
+                System.out.println("A sports is successfully deleted from database.");
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
 
     @Override
     public String toString() {
         return String.format("%-15s%-15s%-15s%-15s%n", sportsID, sportsDesc, sportsCat, sportType);
     }
-    /*public static void main(String[] args) {
-        Sports s = new Sports();
-        try {
-            s.getSportsList();
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }*/
 
-    public static void main(String[] args) {
-        Sports s = new Sports();
-        try {
-            System.out.println(s.getSportsDesc(1));
-            System.out.println(s.countSports());
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

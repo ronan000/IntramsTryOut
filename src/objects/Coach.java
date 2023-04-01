@@ -65,10 +65,6 @@ public class Coach {
 
     }
 
-
-
-
-
     public void getCoachList() throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
         String query = "SELECT * FROM COACH";
         try {
@@ -112,11 +108,10 @@ public class Coach {
             try {
                 con = SetConnection.getConnection();
                 statement = con.prepareStatement(query);
-                statement.setString(1, String.valueOf(coach.getCoachID()));
+                statement.setString(1, String.valueOf(coach.generateCoachID()));
                 statement.setString(2, coach.getFirstName());
                 statement.setString(3, coach.getLastName());
                 statement.execute();
-                System.out.println(coach.getCoachID());
                 System.out.println("Coach " + coach.getFirstName() + " " + coach.getLastName()  + " is successfully added to the database.");
             } catch (SQLException e) {
                 throw new RuntimeException(e);
@@ -149,30 +144,4 @@ public class Coach {
         return String.format("%-15s%-25s%-20s%n", coachID, firstName, lastName.toUpperCase());
     }
 
-
-    /*public static void main(String[] args) {
-        Coach c = new Coach();
-        try {
-            c.getCoachList();
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }*/
-
-    public static void main(String[] args) {
-        Coach c = new Coach();
-       /* c.setCoachID(c.generateCoachID());
-        c.setLastName("Javier");
-        c.setFirstName("Jake");
-        c.addCoach(c);
-        System.out.println(c.coachExists(1101055));*/
-        c.removeCoach(1101020);
-
-    }
 }

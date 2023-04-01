@@ -154,7 +154,7 @@ public class Player {
             try {
                 con = SetConnection.getConnection();
                 statement = con.prepareStatement(query);
-                statement.setString(1, player.getPlayerID());
+                statement.setString(1, player.generatePlayerID());
                 statement.setString(2, String.valueOf(player.getStudentID()));
                 statement.setString(3, String.valueOf(player.getCoachID()));
                 statement.setString(4, String.valueOf(player.getSportID()));
@@ -212,20 +212,4 @@ public class Player {
         return String.format("%-15s%-15s%-15s%-15s%n", playerID, studentID, coachID, sportID);
     }
 
-    public static void main(String[] args) {
-        Player p = new Player();
-        /*String ID = p.generatePlayerID();
-        p.setPlayerID(ID);
-        p.setCoachID(1101013);
-        p.setStudentID(2200465);
-        p.setSportID(1);
-        p.acceptPlayers(p);*/
-        //p.removePlayer("PL0041");
-        //System.out.println( p.playerExists(2200465));
-
-        //System.out.println(p.generatePlayerID());
-        //System.out.println(p.countPlayers());
-        //System.out.println(p.showPlayerList());
-        System.out.println(p.generatePlayerID());
-    }
 }

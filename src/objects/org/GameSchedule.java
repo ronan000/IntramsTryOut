@@ -11,7 +11,7 @@ public class GameSchedule {
     private Date gDate;
     private Time gTime;
 
-    public GameSchedule(){}
+    public GameSchedule(){ }
     public GameSchedule(int gameID, String playerID, int sportID, Date gDate, Time gTime){
         this.gameID = gameID;
         this.playerID = playerID;
@@ -80,11 +80,13 @@ public class GameSchedule {
     }
 
 }*/
+
 import java.sql.*;
 import java.util.Scanner;
 
 public class GameSchedule {
-    public static void main(String[] args) throws SQLException {
+
+    public GameSchedule() throws SQLException{
         Scanner st = new Scanner(System.in);
         Scanner num = new Scanner(System.in);
         int choices;
@@ -126,9 +128,6 @@ public class GameSchedule {
                     pst.setInt(5,sportID);
                     pst.execute();
                     System.out.println("Added Successfully");
-
-
-
                     break;
                 case 2:
                     while (rs.next()) {
@@ -176,7 +175,6 @@ public class GameSchedule {
                     break;
             }
         } while (choices != 0);
-
     }
 }
 

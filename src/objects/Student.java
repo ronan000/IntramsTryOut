@@ -1,9 +1,6 @@
 package objects;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +62,10 @@ public class Student {
         this.gender = gender;
     }
 
+    enum Gender{
+        Female,
+        Male
+    }
     public boolean studIDVerifier(int studentID){
         int count = 0;
         String toInt = Integer.toString(studentID);
@@ -121,6 +122,7 @@ public class Student {
         }
     }
 
+
     public boolean studentExist(int studentID){
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -160,23 +162,71 @@ public class Student {
         }
     }
 
+    public void updateName(int studentID, String fName, String lName){
+        if(studentExist(studentID) == false){
+            System.out.println("There is no student with ID number " + studentID + " in the registration database.");
+        }
+        else{
+            PreparedStatement statement = null;
+            ResultSet resultSet = null;
+            String query = "UPDATE STUDENT SET FFIRSTNAME = ?, LASTNAME = ?  WHERE STUDENTID = ? ";
+            try{
+                con = SetConnection.getConnection();
+                statement = con.prepareStatement(query);
+                statement.setString(2, fName);
+                statement.setString(3, lName);
+                statement.executeUpdate();
+                System.out.println("Student's name is successfully updated.");
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public void updateID(int studentID, int updated){
+        if(studentExist(studentID) == false){
+            System.out.println("There is no student with ID number " + studentID + " in the registration database.");
+        }
+        else{
+            PreparedStatement statement = null;
+            ResultSet resultSet = null;
+            String query = "UPDATE STUDENT SET STUDENTID = ? WHERE STUDENTID = ? ";
+            try{
+                con = SetConnection.getConnection();
+                statement = con.prepareStatement(query);
+                statement.setInt(1, updated);
+                statement.executeUpdate();
+                System.out.println("ID number successfully updated.");
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /*public void updateGender(int studentID, String gender){
+        Gender g = Gender.valueOf(gender);
+        if(studentExist(studentID) == false){
+            System.out.println("There is no student with ID number " + studentID + " in the registration database.");
+        }
+        else{
+            PreparedStatement statement = null;
+            ResultSet resultSet = null;
+            String query = "UPDATE STUDENT SET GENDER = ? WHERE STUDENTID = ? ";
+            try{
+                con = SetConnection.getConnection();
+                statement = con.prepareStatement(query);
+                statement.setObject(4, gender, Types.OTHER);
+                statement.executeUpdate();
+                System.out.println("ID number successfully updated.");
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }*/
 
     @Override
     public String toString() {
         return String.format("%-15s%-25s%-20s%-10s%-15s%n", ID, firstName, lastName.toUpperCase(), gender, course);
 
     }
-
-    public static void main(String[] args) {
-        Student s = new Student();
-        /*s.setFirstName("Jieben Kayla");
-        s.setCourse("BSIT");
-        s.setGender("Female");
-        s.setLastName("Abaya");
-        s.setID(2200465);
-        s.registerStudent(s);*/
-        s.removeRegistration(2200465);
-        //System.out.println(s.studIDVerifier(2200465));
-    }
-
 }
