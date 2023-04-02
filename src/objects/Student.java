@@ -1,6 +1,9 @@
 package objects;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,7 +64,6 @@ public class Student {
     public void setGender(String gender) {
         this.gender = gender;
     }
-
     public boolean studIDVerifier(int studentID){
         int count = 0;
         String toInt = Integer.toString(studentID);
@@ -125,8 +127,6 @@ public class Student {
         return gender.equalsIgnoreCase("female") || gender.equalsIgnoreCase("male");
     }
     public boolean studentExist(int studentID){
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
         String query = "SELECT * FROM STUDENT";
         try {
             con = SetConnection.getConnection();
@@ -148,22 +148,20 @@ public class Student {
             System.out.println("There is no student with ID number " + studentID + " registered in the database" );
         }
         else {
-            PreparedStatement statement = null;
-            ResultSet resultSet = null;
             String query = "DELETE FROM STUDENT WHERE STUDENTID = ?";
             try {
                 con = SetConnection.getConnection();
                 statement = con.prepareStatement(query);
                 statement.setString(1, String.valueOf(studentID));
                 statement.execute();
-                System.out.println("A student is successfully deleted from database.");
+                System.out.println("A student is successfully deleted from the database.");
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    public void updateStudent(Student student, int newID){
+    public void updateStudentData(Student student, int newID){
         if(studentExist(student.getID()) == false){
             System.out.println("There is no student with ID number " + student.getID() + " in the registration database.");
         }
@@ -189,16 +187,33 @@ public class Student {
         }
     }
 
+    public String searchStudent(int studentID){
+       String query = "SELECT * FROM STUDENT WHERE STUDENTID = ?";
+       try {
+           con = SetConnection.getConnection();
+           statement = con.prepareStatement(query);
+           statement.setInt(1, studentID);
+           resultSet = statement.executeQuery();
+           while (resultSet.next()) {
+               int id = resultSet.getInt("studentID");
+               String name = resultSet.getString("fFirstName");
+               String last = resultSet.getString("LastName");
+               String gender = resultSet.getString("gender");
+               String course = resultSet.getString("course");
+               System.out.println("Search result for student ID " + studentID + ":");
+               System.out.printf("%-15s%-25s%-20s%-10s%-15s%n", "StudentID", "FirstName", "LASTNAME", "Gender", "Course");
+               return "" + new Student(id, name, last, gender, course);
+           }
+       } catch (SQLException e) {
+           throw new RuntimeException(e);
+       }
+        return "There is no data for student ID number " +  studentID + " in the database";
+
+    }
+
 
     @Override
     public String toString() {
         return String.format("%-15s%-25s%-20s%-10s%-15s%n", ID, firstName, lastName.toUpperCase(), gender, course);
-    }
-
-    public static void main(String[] args) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
-        Student s = new Student();
-        /*s.updateID(2200126, 2200126);
-        s.getStudentsList();*/
-        s.getStudentsList();
     }
 }

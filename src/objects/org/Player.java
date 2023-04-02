@@ -21,7 +21,7 @@ public class Player {
 
     public Player(){}
 
-    public Player(String  playerID, int studentID, int sportID, int coachID, int ID){
+    public Player(String  playerID, int studentID, int sportID, int coachID, int teamID){
         this.playerID = playerID;
         this.studentID = studentID;
         this.sportID = sportID;
@@ -83,11 +83,20 @@ public class Player {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        try {
+            student.getStudentsList();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public boolean playerExists(int studentID){
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
         String query = "SELECT * FROM PLAYERLIST";
         try {
             con = SetConnection.getConnection();
@@ -104,8 +113,6 @@ public class Player {
         return false;
     }
     public boolean playerExists(String playerID){
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
         String query = "SELECT * FROM PLAYERLIST";
         try {
             con = SetConnection.getConnection();
@@ -162,11 +169,11 @@ public class Player {
             try {
                 con = SetConnection.getConnection();
                 statement = con.prepareStatement(query);
-                statement.setString(1, player.generatePlayerID());
-                statement.setString(2, String.valueOf(player.getStudentID()));
-                statement.setString(3, String.valueOf(player.getCoachID()));
-                statement.setString(4, String.valueOf(player.getSportID()));
-                statement.setString(5, String.valueOf(player.getTeamID()));
+                statement.setString(1, player.getPlayerID());
+                statement.setInt(2, player.getStudentID());
+                statement.setInt(3, player.getCoachID());
+                statement.setInt(4, player.getSportID());
+                statement.setInt(5, player.getTeamID());
                 statement.execute();
                 System.out.println("Player " + player.getPlayerID()  + " is successfully added to the database.");
             } catch (SQLException e) {
@@ -210,7 +217,7 @@ public class Player {
                 Player p = new Player(resultSet.getString("playerID"), Integer.valueOf(resultSet.getString("studentID")), Integer.valueOf(resultSet.getString("coachID")), Integer.valueOf(resultSet.getString("sportID")), Integer.parseInt(resultSet.getString("teamID")));
                 players.add(p);
             }
-            System.out.println("\t\tLIST OF PLAYERS:");
+
             System.out.printf("%-15s%-15s%-15s%-15s%-15s%n", "PlayerID", "StudentID", "CoachID", "SportID", "TeamID");
             players.forEach((p) -> System.out.print(p));
 
@@ -218,6 +225,27 @@ public class Player {
             throw new RuntimeException(e);
         }
         return "";
+    }
+    public void updatePlayerData (Player player){
+        if(playerExists(player.getPlayerID()) == false) {
+            System.out.println("There is no player with ID number " + player.getPlayerID() + ".");
+        }
+        else {
+            String query = "UPDATE PLAYERLIST SET COACHID = ?, SPORTID = ?, TEAMID = ? WHERE PLAYERID = ?;";
+            try{
+                con = SetConnection.getConnection();
+                statement = con.prepareStatement(query);
+                statement.setInt(1, player.getCoachID());
+                statement.setInt(2, player.getSportID());
+                statement.setInt(3, player.getTeamID());
+                statement.setString(4, player.getPlayerID());
+                statement.executeUpdate();
+                System.out.println("The data for " + player.getPlayerID() + " is successfully updated." );
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
     }
     public void removePlayer(String playerID){
         if(playerExists(playerID) == false){
@@ -239,7 +267,6 @@ public class Player {
 
     @Override
     public String toString() {
-        return String.format("%-15s%-15s%-15s%-15s%-15s%n", playerID, studentID, coachID, sportID, teamID);
+        return String.format("%-15s%-15s%-15s%-15s%-15s%n", playerID, studentID, sportID, coachID, teamID);
     }
-
 }

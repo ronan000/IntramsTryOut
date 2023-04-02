@@ -6,7 +6,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class Sports {
     private int sportsID;
@@ -93,13 +95,13 @@ public class Sports {
     }
     public int countSports(){
         int counter= 0;
-        String query = "SELECT COUNT(SPORTID) FROM SPORT";
+        String query = "SELECT SPORTID FROM SPORT ORDER BY SPORTID DESC LIMIT 1 ";
         try {
             con = SetConnection.getConnection();
             statement = con.prepareStatement(query);
             resultSet = statement.executeQuery();
             resultSet.next();
-            counter = resultSet.getInt(1);
+            counter = resultSet.getInt("sportID");
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -142,6 +144,52 @@ public class Sports {
         }
         return false;
     }
+
+    public boolean sportsExists(String desc){
+        String query = "SELECT * FROM SPORT";
+        try{
+            con = SetConnection.getConnection();
+            statement = con.prepareStatement(query);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                String d = resultSet.getString("sportDescription");
+                if (d.equalsIgnoreCase(desc))
+                    return true;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+
+    }
+
+    public void searchSports(String sportsDesc) {
+        if(sportsExists(sportsDesc) == true){
+            String query = "SELECT * FROM SPORT WHERE SPORTDESCRIPTION = ?;";
+            try {
+                con = SetConnection.getConnection();
+                statement = con.prepareStatement(query);
+                statement.setString(1, sportsDesc);
+                resultSet = statement.executeQuery();
+                while (resultSet.next()) {
+                    int id = resultSet.getInt("sportID");
+                    String desc = resultSet.getString("sportDescription");
+                    String cat = resultSet.getString("sCategory");
+                    String t = resultSet.getString("sType");
+                    System.out.println("Search result for sports name " + sportsDesc + ":");
+                    sports.add(new Sports(id, desc, cat, t));
+                    System.out.printf("%-15s%-15s%-15s%-15s%n", "SportsID", "SportsDesc", "SportsCat", "SportType");
+                    sports.forEach((s) -> System.out.print(s));
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            System.out.println("There is no sports \"" + sportsDesc + " \" in the database." );
+        }
+    }
+
 
     public void addSports(Sports sports){
         if(sportsExists(sports.getSportsID(), sports.getSportsDesc(), sports.getSportsCat(), sports.getSportType()) == true){
@@ -194,7 +242,6 @@ public class Sports {
             }
         }
     }
-
 
     @Override
     public String toString() {

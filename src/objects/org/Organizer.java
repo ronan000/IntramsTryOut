@@ -104,8 +104,9 @@ public class Organizer {
                 "[1] Register Student\n" +
                 "[2] Show List of Applicant Students\n" +
                 "[3] Update Student Data\n" +
-                "[4] Remove Applicant Student\n" +
-                "[5] Back\n" +
+                "[4] Search a Student\n" +
+                "[5] Remove Applicant Student\n" +
+                "[6] Back\n" +
                 "Enter the number of option: ");
         studentCRUD(keyboard.nextLine());
     }
@@ -115,7 +116,7 @@ public class Organizer {
             case "1":
                 System.out.println("REGISTER STUDENT");
                 System.out.print("Enter Student ID: ");
-                student.setID(Integer.parseInt(String.valueOf(keyboard.nextLine())));
+                student.setID(Integer.parseInt(keyboard.nextLine()));
                 System.out.print("Enter First name: ");
                 student.setFirstName(keyboard.nextLine());
                 System.out.print("Enter Last name: ");
@@ -145,7 +146,7 @@ public class Organizer {
             case "3":
                 System.out.println("UPDATE STUDENT DATA");
                 System.out.print("Enter old ID number: ");
-                student.setID(Integer.parseInt(String.valueOf(keyboard.nextInt())));
+                student.setID(Integer.parseInt(keyboard.nextLine()));
                 System.out.print("Enter first name: ");
                 student.setFirstName(keyboard.nextLine());
                 System.out.print("Enter last name: ");
@@ -154,14 +155,24 @@ public class Organizer {
                 student.setGender(keyboard.nextLine());
                 System.out.print("Enter course: ");
                 student.setCourse(keyboard.nextLine());
+                System.out.print("Enter new ID nubmer: ");
+                String newID = keyboard.nextLine();
+                student.updateStudentData(student, Integer.parseInt(newID));
                 organizerMenu();
+                break;
             case "4":
+                System.out.println("SEARCH A STUDENT");
+                System.out.print("Enter Student ID number to search: ");
+                System.out.println(student.searchStudent(Integer.parseInt(keyboard.nextLine())));
+                organizerMenu();
+                break;
+            case "5":
                 System.out.println("REMOVE APPLICANT STUDENT");
                 System.out.print("Enter the ID Number of student to remove: ");
                 student.removeRegistration(Integer.parseInt(keyboard.nextLine()));
                 organizerMenu();
                 break;
-            case "5":
+            case "6":
                 organizerMenu();
             break;
             default:
@@ -175,9 +186,10 @@ public class Organizer {
         System.out.println("\t\tPlayer Table\n" +
                 "[1] Accept Student\n" +
                 "[2] Show List of Players\n" +
-                "[3] Search a Player\n" +
-                "[4] Remove a Player\n" +
-                "[5] Back\n" +
+                "[3] Update Player Data\n" +
+                "[4] Search a Player\n" +
+                "[5] Remove a Player\n" +
+                "[6] Back\n" +
                 "Enter number of option: ");
         playerCRUD(keyboard.nextLine());
     }
@@ -190,7 +202,7 @@ public class Organizer {
                 System.out.print("Enter Student ID: ");
                 player.setStudentID(Integer.parseInt(keyboard.nextLine()));
                 player.setPlayerID(player.generatePlayerID());
-                System.out.println("Enter Sports ID number: ");
+                System.out.print("Enter Sports ID number: ");
                 player.setSportID(Integer.parseInt(keyboard.nextLine()));
                 System.out.print("Enter Coach ID: ");
                 player.setCoachID(Integer.parseInt(keyboard.nextLine()));
@@ -205,17 +217,30 @@ public class Organizer {
                 organizerMenu();
                 break;
             case "3":
+                System.out.println("UPDATE PLAYER DATA");
+                System.out.print("Enter player ID number to update: ");
+                player.setPlayerID(keyboard.nextLine());
+                System.out.print("Enter new coach ID: ");
+                player.setCoachID(Integer.parseInt(keyboard.nextLine()));
+                System.out.print("Enter new sport ID: ");
+                player.setSportID(Integer.parseInt(keyboard.nextLine()));
+                System.out.print("Enter new team ID: ");
+                player.setTeamID(Integer.parseInt(keyboard.nextLine()));
+                player.updatePlayerData(player);
+                organizerMenu();
+                break;
+            case "4":
                 System.out.println("SEARCH PLAYER");
                 System.out.print("Enter the player ID to search: ");
                 System.out.println(player.searchPlayer(keyboard.nextLine()));
                 organizerMenu();
                 break;
-            case "4":
+            case "5":
                 System.out.println("REMOVE PLAYER");
-                System.out.println("Enter player number to remove: ");
+                System.out.print("Enter player number to remove: ");
                 player.removePlayer(keyboard.nextLine());
                 organizerMenu();
-            case "5":
+            case "6":
                 organizerMenu();
                 break;
             default:
@@ -278,8 +303,9 @@ public class Organizer {
         System.out.println("\t\tCoach Table\n" +
                 "[1] Add Coach\n" +
                 "[2] Show List of Coaches\n" +
-                "[3] Remove a Coach\n" +
-                "[4] Back\n" +
+                "[3] Update Coach Data\n" +
+                "[4] Search Coach\n" +
+                "[5] Back\n" +
                 "Enter the number of option: ");
         coachCRUD(keyboard.nextLine());
     }
@@ -294,6 +320,9 @@ public class Organizer {
                 coach.setFirstName(keyboard.nextLine());
                 System.out.print("Enter last name: ");
                 coach.setLastName(keyboard.nextLine());
+                System.out.print("Enter sports ID: ");
+                coach.setSportID(Integer.parseInt(keyboard.nextLine()));
+                coach.setCoachID(coach.generateCoachID());
                 coach.addCoach(coach);
                 organizerMenu();
                 break;
@@ -313,12 +342,25 @@ public class Organizer {
                 organizerMenu();
                 break;
             case "3":
-                System.out.println("REMOVE A COACH");
-                System.out.print("Enter coach ID number to remove: ");
-                coach.removeCoach(Integer.parseInt(keyboard.nextLine()));
+                System.out.println("UPDATE COACH DATA");
+                System.out.print("Enter coach ID number to update: ");
+                coach.setCoachID(Integer.parseInt(keyboard.nextLine()));
+                System.out.print("Enter new first name: ");
+                coach.setFirstName(keyboard.nextLine());
+                System.out.print("Enter new last name: ");
+                coach.setLastName(keyboard.nextLine());
+                System.out.print("Enter sports ID number: ");
+                coach.setSportID(Integer.parseInt(keyboard.nextLine()));
+                coach.updateCoach(coach);
                 organizerMenu();
                 break;
             case "4":
+                System.out.println("SEARCH COACH");
+                System.out.print("Enter the coach ID number to search: ");
+                System.out.println(coach.searchCoach(Integer.parseInt(keyboard.nextLine())));
+                organizerMenu();
+                break;
+            case "5":
                 organizerMenu();
                 break;
             default:
@@ -331,15 +373,16 @@ public class Organizer {
         System.out.println("\t\tSports Table\n" +
                 "[1] Add Sports\n" +
                 "[2] Show List of Sports\n" +
-                "[3] Remove a Sports\n" +
-                "[4] Back\n" +
+                "[3] Search Sports\n" +
+                "[4] Remove a Sports\n" +
+                "[5] Back\n" +
                 "Enter the number of option: ");
         sportsCRUD(keyboard.nextLine());
     }
 
-    public void sportsCRUD(String option){
+    public void sportsCRUD(String option) {
         Sports sports = new Sports();
-        switch (option){
+        switch (option) {
             case "1":
                 System.out.println("ADD SPORTS");
                 sports.setSportsID(sports.generateSportsID());
@@ -368,18 +411,22 @@ public class Organizer {
                 organizerMenu();
                 break;
             case "3":
+                System.out.println("SEARCH SPORTS");
+                System.out.print("Enter the name of the sports to search: ");
+                sports.searchSports(keyboard.nextLine());
+                organizerMenu();
+                break;
+            case "4":
                 System.out.println("REMOVE A SPORTS");
                 System.out.print("Enter the sports ID to remove: ");
                 sports.removeSports(Integer.parseInt(keyboard.nextLine()));
                 organizerMenu();
                 break;
-            case "4":
+            case "5":
                 organizerMenu();
                 break;
             default:
                 System.out.println("Invalid input.");
-                organizerMenu();
         }
-
     }
 }
