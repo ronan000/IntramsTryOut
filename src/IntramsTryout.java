@@ -19,6 +19,9 @@ public class IntramsTryout {
         loginAs(keyboard.nextLine());
     }
 
+    /*
+    USERNAME AND PASSWORD IS IN src/res/data/orgcredentials.txt
+     */
     public static void loginAs(String choice){
         Scanner keyboard = new Scanner(System.in);
         switch (choice){
