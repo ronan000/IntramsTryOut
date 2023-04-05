@@ -57,6 +57,9 @@ public class CoachMain {
     public String getLastName() {
         return lastName;
     }
+    public String toString() {
+        return coachID + ": " + firstName + lastName + " | Sport: " + sportID;
+    }
 
     public boolean login(int coachID) {
         String query = ("SELECT * FROM COACH WHERE COACH ID = " + coachID);
@@ -77,7 +80,7 @@ public class CoachMain {
 
     public void coachMenu() {
         do {
-            System.out.println("Welcome, Coach " + getFirstName() + getLastName());
+            System.out.println("Welcome, Coach ");
             System.out.println("Sport: "); // add sport name
             System.out.print("FIRST ASSESSMENT MENU\n" +
                     "[1] View Players" +

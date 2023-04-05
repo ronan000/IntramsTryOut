@@ -44,7 +44,9 @@ public class Players {
     public void setCoachID(int coachID) {
         this.coachID = coachID;
     }
-
+    public String toString() {
+        return String.format("%-15s%-15s%-15s%n", playerID, studentID, coachID);
+    }
     Student student = new Student();
 
     public void showListOfPlayers(String query) {
