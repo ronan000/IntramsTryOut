@@ -49,7 +49,7 @@ public class IntramsTryout {
                 int coachID = keyboard.nextInt();
                 if (c.login(coachID) == true) {
                     System.out.println("\tSuccessfully logged in as COACH!\n");
-                    c.coachInfo(1101007);
+                    c.coachInfo(coachID);
                     c.coachMenu();
                 } else {
                     System.out.println("Invalid username or password.");
