@@ -80,7 +80,7 @@ public class CoachMain {
 
     public void coachMenu() {
         do {
-            System.out.println("Welcome, Coach ");
+            System.out.println("Welcome, Coach " + getFirstName() + " " + getLastName());
             System.out.println("Sport: "); // add sport name
             System.out.print("FIRST ASSESSMENT MENU\n" +
                     "[1] View Players" +
