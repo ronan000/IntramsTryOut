@@ -57,7 +57,7 @@ public class Players {
                 players.add(player);
             }
 
-            System.out.printf("%-15s%-15s%-15s%n", "PlayerID", "StudentID", "CoachID");
+            System.out.printf("%-15s%-15s%-15s%n", "PlayerID", "StudentID", "CoachID"); // add firstname, last name, sport, remove coach ID
             players.forEach((p) -> System.out.print(p));
         } catch (SQLException e) {
             throw new RuntimeException(e);
