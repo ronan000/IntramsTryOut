@@ -181,6 +181,28 @@ public class Coach {
 
     }
 
+    public void showListPlayers(){
+        String query = "SELECT PLAYERID, STUDENT.STUDENTID, FFIRSTNAME, LASTNAME, SPORT.SPORTDESCRIPTION FROM PLAYERLIST, STUDENT, SPORT WHERE STUDENT.STUDENTID=PLAYERLIST.STUDENTID AND PLAYERLIST.SPORTID = SPORT.SPORTID";
+        try {
+            con = SetConnection.getConnection();
+            statement = con.prepareStatement(query);
+            resultSet = statement.executeQuery();
+            System.out.printf("%-15s%-15s%-15s%-15s%-15s%n", "PlayerID"," StudentID","FirstName", "LastName", "Sports");
+            while (resultSet.next()){
+                String pID = resultSet.getString(1);
+                int sID = resultSet.getInt(2);
+                String fName = resultSet.getString(3);
+                String lName = resultSet.getString(4);
+                String spoDesc = resultSet.getString(5);
+                System.out.printf("%-15s%-15s%-15s%-15s%-15s%n", pID, sID, fName, lName, spoDesc);
+            }
+            statement.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
     /*public void removeCoach(int coachID){
         if(coachExists(coachID) == false){
             System.out.println("There is no coach with an ID number " + coachID + " in the database" );
@@ -204,5 +226,9 @@ public class Coach {
         return String.format("%-15s%-25s%-20s%-12s%n", coachID, firstName, lastName.toUpperCase(), sportID);
     }
 
+    public static void main(String[] args) {
+        Coach c = new Coach();
+        c.showListPlayers();
+    }
 
 }

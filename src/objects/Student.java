@@ -216,4 +216,9 @@ public class Student {
     public String toString() {
         return String.format("%-15s%-25s%-20s%-10s%-15s%n", ID, firstName, lastName.toUpperCase(), gender, course);
     }
+
+    public static void main(String[] args) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+        Student s = new Student();
+        s.getStudentsList();
+    }
 }
