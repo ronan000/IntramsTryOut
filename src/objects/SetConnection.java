@@ -3,7 +3,7 @@ package objects;
 import java.sql.*;
 
 public class SetConnection {
-    private static String url = "jdbc:mysql://localhost:3306/tryouts";
+    private static String url = "jdbc:mysql://localhost/tryouts";
     private static String driverName = "com.mysql.cj.jdbc.Driver";
     private static String username = "root";
     private static String password = "";
