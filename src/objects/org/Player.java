@@ -226,6 +226,33 @@ public class Player {
         }
         return "";
     }
+
+
+    public void showListPlayers(){
+        String query = "SELECT PLAYERID, STUDENT.STUDENTID, FFIRSTNAME, STUDENT.LASTNAME, SPORT.SPORTDESCRIPTION, TEAMS.TEAMNAME, COACH.COACHID FROM PLAYERLIST, STUDENT, SPORT, TEAMS, COACH WHERE STUDENT.STUDENTID=PLAYERLIST.STUDENTID AND PLAYERLIST.SPORTID = SPORT.SPORTID AND PLAYERLIST.TEAMID=TEAMS.TEAMID AND PLAYERLIST.COACHID = COACH.COACHID";
+        try {
+            con = SetConnection.getConnection();
+            statement = con.prepareStatement(query);
+            resultSet = statement.executeQuery();
+            System.out.printf("%-15s%-15s%-15s%-15s%-15s%-20s%-15s%n", "PlayerID"," StudentID","FirstName", "LastName", "Sports", "TeamName", "CoachID");
+            while (resultSet.next()){
+                String pID = resultSet.getString(1);
+                int sID = resultSet.getInt(2);
+                String fName = resultSet.getString(3);
+                String lName = resultSet.getString(4);
+                String spoDesc = resultSet.getString(5);
+                String team = resultSet.getString(6);
+                int cID = resultSet.getInt(7);
+                System.out.printf("%-15s%-15s%-15s%-15s%-15s%-20s%-15s%n", pID, sID, fName, lName, spoDesc, team, cID);
+            }
+            statement.close();
+            con.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
     public void updatePlayerData (Player player){
         if(playerExists(player.getPlayerID()) == false) {
             System.out.println("There is no player with ID number " + player.getPlayerID() + ".");

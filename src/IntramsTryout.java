@@ -47,8 +47,9 @@ public class IntramsTryout {
                 CoachMain c = new CoachMain();
                 System.out.print("Enter ID Number: ");
                 int coachID = keyboard.nextInt();
-                if (c.login(coachID)) {
-                    System.out.println("\tSuccessfully logged in as ORGANIZER!\n");
+                if (c.login(coachID) == true) {
+                    System.out.println("\tSuccessfully logged in as COACH!\n");
+                    c.coachInfo(1101007);
                     c.coachMenu();
                 } else {
                     System.out.println("Invalid username or password.");

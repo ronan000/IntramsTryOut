@@ -213,7 +213,7 @@ public class Organizer {
                 break;
             case "2":
                 System.out.println("LIST OF PLAYERS");
-                player.showPlayerList();
+                player.showListPlayers();
                 organizerMenu();
                 break;
             case "3":
@@ -328,17 +328,7 @@ public class Organizer {
                 break;
             case "2":
                 System.out.println("LIST OF COACHES");
-                try {
-                    coach.getCoachList();
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                } catch (InstantiationException e) {
-                    throw new RuntimeException(e);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
+                coach.showCoachList();
                 organizerMenu();
                 break;
             case "3":

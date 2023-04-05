@@ -181,27 +181,28 @@ public class Coach {
 
     }
 
-    public void showListPlayers(){
-        String query = "SELECT PLAYERID, STUDENT.STUDENTID, FFIRSTNAME, LASTNAME, SPORT.SPORTDESCRIPTION FROM PLAYERLIST, STUDENT, SPORT WHERE STUDENT.STUDENTID=PLAYERLIST.STUDENTID AND PLAYERLIST.SPORTID = SPORT.SPORTID";
-        try {
+    public void showCoachList(){
+        String query = "SELECT COACHID, FIRSTNAME, LASTNAME, COACH.SPORTID, SPORT.SPORTDESCRIPTION FROM COACH, SPORT WHERE COACH.SPORTID=SPORT.SPORTID";
+        try{
             con = SetConnection.getConnection();
             statement = con.prepareStatement(query);
             resultSet = statement.executeQuery();
-            System.out.printf("%-15s%-15s%-15s%-15s%-15s%n", "PlayerID"," StudentID","FirstName", "LastName", "Sports");
-            while (resultSet.next()){
-                String pID = resultSet.getString(1);
-                int sID = resultSet.getInt(2);
-                String fName = resultSet.getString(3);
-                String lName = resultSet.getString(4);
-                String spoDesc = resultSet.getString(5);
-                System.out.printf("%-15s%-15s%-15s%-15s%-15s%n", pID, sID, fName, lName, spoDesc);
+            System.out.printf("%-15s%-15s%-15s%-15s%-15s%n", "CoachID", "FirstName", "LastName", "SportsID", "SportDescription");
+            while(resultSet.next()){
+                int cID = resultSet.getInt(1);
+                String f = resultSet.getString(2);
+                String l = resultSet.getString(3);
+                int sID = resultSet.getInt(4);
+                String d = resultSet.getString(5);
+                System.out.printf("%-15s%-15s%-15s%-15s%-15s%n", cID, f, l, sID, d);
             }
             statement.close();
+            con.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
+
 
     /*public void removeCoach(int coachID){
         if(coachExists(coachID) == false){
@@ -225,10 +226,4 @@ public class Coach {
     public String toString() {
         return String.format("%-15s%-25s%-20s%-12s%n", coachID, firstName, lastName.toUpperCase(), sportID);
     }
-
-    public static void main(String[] args) {
-        Coach c = new Coach();
-        c.showListPlayers();
-    }
-
 }

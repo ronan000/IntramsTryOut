@@ -12,9 +12,9 @@ public class CoachMain {
     private int coachID, sportID;
     private String firstName, lastName;
     private Scanner scanner = new Scanner(System.in);
-    private Connection con;
-    private PreparedStatement statement;
-    private ResultSet resultSet;
+    private Connection con = null;
+    private PreparedStatement statement = null;
+    private ResultSet resultSet = null;
 
 
     public CoachMain() {}
@@ -62,15 +62,16 @@ public class CoachMain {
     }
 
     public boolean login(int coachID) {
-        String query = ("SELECT * FROM COACH WHERE COACH ID = " + coachID);
+        String query = "SELECT * FROM COACH WHERE COACHID=?";
         try {
             con = SetConnection.getConnection();
             statement = con.prepareStatement(query);
+            statement.setInt(1,coachID);
             resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                new CoachMain(resultSet.getInt("coachID"), resultSet.getString("firstName"), resultSet.getString("lastName"), resultSet.getInt("sportID"));
-                return true;
+            while (resultSet.next()) {
+                int  s = resultSet.getInt("coachID");
+                if (s == coachID)
+                    return true;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -78,14 +79,32 @@ public class CoachMain {
         return false;
     }
 
+    public void coachInfo(int coachID){
+        String query = "SELECT COACH.FIRSTNAME, COACH.LASTNAME, SPORT.SPORTDESCRIPTION FROM COACH, SPORT WHERE COACH.COACHID=? AND SPORT.SPORTID=COACH.SPORTID;";
+        try{
+            con = SetConnection.getConnection();
+            statement = con.prepareStatement(query);
+            statement.setInt(1, coachID);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()){
+                String f = resultSet.getString("firstName");
+                String l = resultSet.getString("lastName");
+                String d = resultSet.getString("sportDescription");
+                System.out.println("Welcome, Coach " + f + " " + l + "!");
+                System.out.println("Sport: " + d);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
     public void coachMenu() {
         do {
-            System.out.println("Welcome, Coach " + getFirstName() + " " + getLastName());
-            System.out.println("Sport: "); // add sport name
             System.out.print("FIRST ASSESSMENT MENU\n" +
-                    "[1] View Players" +
-                    "[2] Modify Game Results" +
-                    "[3] View Game Results" +
+                    "[1] View Players\n" +
+                    "[2] Modify Game Results\n" +
+                    "[3] View Game Results\n" +
                     "[4] Exit\n" +
                     "Enter number of choice: ");
             int choice = scanner.nextInt();
