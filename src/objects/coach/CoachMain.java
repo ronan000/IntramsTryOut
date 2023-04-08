@@ -1,6 +1,7 @@
 package objects.coach;
 
 import objects.SetConnection;
+import objects.org.Player;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -101,11 +102,10 @@ public class CoachMain {
 
     public void coachMenu() {
         do {
-            System.out.print("FIRST ASSESSMENT MENU\n" +
+            System.out.print("COACH MENU\n" +
                     "[1] View Players\n" +
-                    "[2] Modify Game Results\n" +
-                    "[3] View Game Results\n" +
-                    "[4] Exit\n" +
+                    "[2] View Game Results\n" +
+                    "[3] Exit\n" +
                     "Enter number of choice: ");
             int choice = scanner.nextInt();
 
@@ -117,9 +117,6 @@ public class CoachMain {
                     gameResults();
                     break;
                 case 3:
-                    viewGames();
-                    break;
-                case 4:
                     System.out.println("Thank you for using the system! :)");
                     System.exit(0);
                     break;
@@ -130,13 +127,31 @@ public class CoachMain {
     }
 
     public void viewPlayers() {
-        String query = ("SELECT * FROM PLAYERLIST WHERE COACHID = " + getCoachID());
-        Players players = new Players();
-        players.showListOfPlayers(query);
+        Player p = new Player();
+        p.showPlayerList();
     }
 
     public void gameResults() {
+        String query = "SELECT * FROM GAMERESULTS;";
 
+        try{
+            con = SetConnection.getConnection();
+            statement = con.prepareStatement(query);
+            resultSet = statement.executeQuery();
+            System.out.printf("%-15s%-15s%-15s%-15s%-15s%n", "GameID", "TeamID", "Wins", "Losses", "SportID");
+            while(resultSet.next()){
+                String gID = resultSet.getString(1);
+                int tID = resultSet.getInt(2);
+                int w = resultSet.getInt(3);
+                int l = resultSet.getInt(4);
+                int sID = resultSet.getInt(5);
+                System.out.printf("%-15s%-15s%-15s%-15s%-15s%n", gID, tID, w, l, sID);
+            }
+            statement.close();
+            con.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void viewGames() {

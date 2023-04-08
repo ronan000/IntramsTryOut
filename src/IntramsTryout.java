@@ -14,8 +14,7 @@ public class IntramsTryout {
         System.out.print("Login as:\n" +
                 "[1] Organizer\n" +
                 "[2] Coach\n" +
-                "[3] Student\n" +
-                "[4] Exit\n" +
+                "[3] Exit\n" +
                 "Enter number of choice: ");
         loginAs(keyboard.nextLine());
     }
@@ -56,7 +55,7 @@ public class IntramsTryout {
                 }
                 break;
             case "3":
-                //For student
+                System.exit(0);
                 break;
 
         }
