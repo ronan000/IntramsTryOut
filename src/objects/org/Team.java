@@ -84,6 +84,8 @@ public class Team {
                 if (t == teamID)
                     return true;
             }
+            statement.close();
+            con.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

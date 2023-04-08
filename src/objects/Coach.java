@@ -68,8 +68,8 @@ public class Coach {
             resultSet = statement.executeQuery();
             resultSet.next();
             counter = resultSet.getInt(1);
-
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return counter + 1;
@@ -88,7 +88,8 @@ public class Coach {
             }
             System.out.printf("%-15s%-25s%-20s%-12s%n", "CoachID", "FirstName", "LASTNAME", "SporstID");
             coaches.forEach((co) -> System.out.print(co));
-
+            statement.close();
+            con.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

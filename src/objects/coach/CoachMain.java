@@ -74,6 +74,8 @@ public class CoachMain {
                 if (s == coachID)
                     return true;
             }
+            statement.close();
+            con.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -94,6 +96,8 @@ public class CoachMain {
                 System.out.println("Welcome, Coach " + f + " " + l + "!");
                 System.out.println("Sport: " + d);
             }
+            statement.close();
+            con.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
