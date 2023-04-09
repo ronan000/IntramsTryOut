@@ -155,7 +155,7 @@ public class Organizer {
                 student.setGender(keyboard.nextLine());
                 System.out.print("Enter course: ");
                 student.setCourse(keyboard.nextLine());
-                System.out.print("Enter new ID nubmer: ");
+                System.out.print("Enter new ID number: ");
                 String newID = keyboard.nextLine();
                 student.updateStudentData(student, Integer.parseInt(newID));
                 organizerMenu();

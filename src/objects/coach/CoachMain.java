@@ -106,21 +106,30 @@ public class CoachMain {
 
     public void coachMenu() {
         do {
-            System.out.print("COACH MENU\n" +
+            System.out.print("\t\t\tCOACH MENU\n" +
                     "[1] View Players\n" +
                     "[2] View Game Results\n" +
-                    "[3] Exit\n" +
+                    "[3] Update Remarks for First Assessment\n" +
+                    "[4] Exit\n" +
                     "Enter number of choice: ");
-            int choice = scanner.nextInt();
+            String choice = scanner.nextLine();
 
             switch (choice) {
-                case 1:
+                case "1":
                     viewPlayers();
                     break;
-                case 2:
+                case "2":
                     gameResults();
                     break;
-                case 3:
+                case "3":
+                    FirstAssessmentGames f = new FirstAssessmentGames();
+                    System.out.print("Enter Team ID to update: ");
+                    String t = scanner.nextLine();
+                    System.out.print("Enter Remark: ");
+                    String r = scanner.nextLine();
+                    f.updateRemark(Integer.parseInt(t), r);
+                    break;
+                case "4":
                     System.out.println("Thank you for using the system! :)");
                     System.exit(0);
                     break;
