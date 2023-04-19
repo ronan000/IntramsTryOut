@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Student {
-    private int ID;
+    private int ID, courseYear;
     private String firstName, lastName, course, gender;
     private Connection con = null;
     private PreparedStatement statement = null;
@@ -16,13 +16,13 @@ public class Student {
     List<Student> students = new ArrayList<>();
 
     public Student() {}
-    public Student(int ID, String firstName, String lastName, String gender, String course){
+    public Student(int ID, String firstName, String lastName, String gender, String course, int courseYear){
         this.ID = ID;
         this.firstName = firstName;
         this.lastName = lastName;
         this.course = course;
         this.gender = gender;
-
+        this.courseYear = courseYear;
     }
 
     public int getID() {
@@ -45,6 +45,10 @@ public class Student {
         return gender;
     }
 
+    public int getCourseYear() {
+        return courseYear;
+    }
+
     public void setID(int ID) {
         this.ID = ID;
     }
@@ -64,6 +68,11 @@ public class Student {
     public void setGender(String gender) {
         this.gender = gender;
     }
+
+    public void setCourseYear(int courseYear) {
+        this.courseYear = courseYear;
+    }
+
     public boolean studIDVerifier(int studentID){
         int count = 0;
         String toInt = Integer.toString(studentID);
@@ -89,7 +98,7 @@ public class Student {
             System.out.println("Invalid ID number.");
         }
         else {
-            String query = "INSERT INTO `student` (`studentID`, `fFirstName`, `LastName`, `gender`, `course`) VALUES (?, ?, ?, ?, ?);";
+            String query = "INSERT INTO `students` (`stud_ID`, `first_name`, `last_name`, `gender`, `course`, `course_year`) VALUES (?, ?, ?, ?, ?, ?);";
             try {
                 con = SetConnection.getConnection();
                 statement = con.prepareStatement(query);
@@ -98,6 +107,7 @@ public class Student {
                 statement.setString(3, student.getLastName());
                 statement.setString(4, student.getGender());
                 statement.setString(5, student.getCourse());
+                statement.setInt(6, student.getCourseYear());
                 statement.execute();
                 System.out.println(student.getFirstName()  + " " + student.getLastName()  + " is successfully registered as applicant for tryout.");
             } catch (SQLException e) {
@@ -106,16 +116,16 @@ public class Student {
         }
     }
     public void getStudentsList() throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
-        String query = "SELECT * FROM STUDENT";
+        String query = "SELECT * FROM STUDENTS";
         try {
             con = SetConnection.getConnection();
             statement = con.prepareStatement(query);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                Student s = new Student(Integer.valueOf(resultSet.getString("studentID")), resultSet.getString("fFirstName"), resultSet.getString("LastName"), resultSet.getString("gender"), resultSet.getString("course"));
+                Student s = new Student(resultSet.getInt("stud_ID"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("gender"), resultSet.getString("course"), resultSet.getInt("course_year"));
                 students.add(s);
             }
-            System.out.printf("%-15s%-25s%-20s%-10s%-15s%n", "StudentID", "FirstName", "LASTNAME", "Gender", "Course");
+            System.out.printf("%-15s%-25s%-20s%-10s%-25s%-15s%n", "StudentID", "FirstName", "LASTNAME", "Gender", "Course", "CourseYear");
             students.forEach((sp) -> System.out.print(sp));
 
         } catch (SQLException e) {
@@ -124,16 +134,16 @@ public class Student {
     }
 
     public boolean genderVerifier(String gender){
-        return gender.equalsIgnoreCase("female") || gender.equalsIgnoreCase("male");
+        return gender.equalsIgnoreCase("F") || gender.equalsIgnoreCase("M");
     }
     public boolean studentExist(int studentID){
-        String query = "SELECT * FROM STUDENT";
+        String query = "SELECT * FROM STUDENTS";
         try {
             con = SetConnection.getConnection();
             statement = con.prepareStatement(query);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                int s = Integer.parseInt(resultSet.getString("studentID"));
+                int s = Integer.parseInt(resultSet.getString("stud_ID"));
                 if (s == studentID)
                     return true;
             }
@@ -148,7 +158,7 @@ public class Student {
             System.out.println("There is no student with ID number " + studentID + " registered in the database" );
         }
         else {
-            String query = "DELETE FROM STUDENT WHERE STUDENTID = ?";
+            String query = "DELETE FROM STUDENTS WHERE STUD_ID = ?";
             try {
                 con = SetConnection.getConnection();
                 statement = con.prepareStatement(query);
@@ -169,15 +179,16 @@ public class Student {
             System.out.println("Invalid gender input.");
         }
         else {
-            String query = "UPDATE STUDENT SET STUDENTID = ?, FFIRSTNAME = ?, LASTNAME = ?, GENDER = ?, COURSE = ?  WHERE STUDENTID = ? ";
+            String query = "UPDATE STUDENTS SET STUD_ID = ?, FIRST_NAME = ?, LAST_NAME = ?, GENDER = ?, COURSE = ?, COURSE_YEAR = ?  WHERE STUD_ID = ? ";
             try{
                 con = SetConnection.getConnection();
                 statement = con.prepareStatement(query);
-                statement.setInt(6, student.getID());
+                statement.setInt(7, student.getID());
                 statement.setString(2, student.getFirstName());
                 statement.setString(3, student.getLastName());
                 statement.setString(4, student.getGender());
                 statement.setString(5, student.getCourse());
+                statement.setInt(6, student.getCourseYear());
                 statement.setInt(1, newID);
                 statement.executeUpdate();
                 System.out.println("Data for Student " + student.getID() + " is successfully updated.");
@@ -188,21 +199,22 @@ public class Student {
     }
 
     public String searchStudent(int studentID){
-       String query = "SELECT * FROM STUDENT WHERE STUDENTID = ?";
+       String query = "SELECT * FROM STUDENTS WHERE STUD_ID = ?";
        try {
            con = SetConnection.getConnection();
            statement = con.prepareStatement(query);
            statement.setInt(1, studentID);
            resultSet = statement.executeQuery();
            while (resultSet.next()) {
-               int id = resultSet.getInt("studentID");
-               String name = resultSet.getString("fFirstName");
-               String last = resultSet.getString("LastName");
+               int id = resultSet.getInt("stud_ID");
+               String name = resultSet.getString("first_name");
+               String last = resultSet.getString("last_name");
                String gender = resultSet.getString("gender");
                String course = resultSet.getString("course");
+               int year = resultSet.getInt("course_year");
                System.out.println("Search result for student ID " + studentID + ":");
-               System.out.printf("%-15s%-25s%-20s%-10s%-15s%n", "StudentID", "FirstName", "LASTNAME", "Gender", "Course");
-               return "" + new Student(id, name, last, gender, course);
+               System.out.printf("%-15s%-25s%-20s%-10s%-25s%-15s%n", "StudentID", "FirstName", "LASTNAME", "Gender", "Course", "CourseYear");
+               return "" + new Student(id, name, last, gender, course, year);
            }
            statement.close();
            con.close();
@@ -216,7 +228,7 @@ public class Student {
 
     @Override
     public String toString() {
-        return String.format("%-15s%-25s%-20s%-10s%-15s%n", ID, firstName, lastName.toUpperCase(), gender, course);
+        return String.format("%-15s%-25s%-20s%-10s%-25s%-15s%n", ID, firstName, lastName.toUpperCase(), gender, course, courseYear);
     }
 
 }

@@ -10,16 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Coach {
-    private int coachID, sportID;
     private Connection con = null;
-    private String firstName, lastName;
+    private String firstName, lastName, coachID, sportID;
     private PreparedStatement statement = null;
     private ResultSet resultSet = null;
     private List<Coach> coaches = new ArrayList<>();
     private Sports sports = new Sports();
 
     public Coach(){}
-    public Coach(int coachID, String firstName, String lastName, int sportID){
+    public Coach(String coachID, String firstName, String lastName, String sportID){
         this.coachID = coachID;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -27,7 +26,7 @@ public class Coach {
 
     }
 
-    public void setCoachID(int coachID) {
+    public void setCoachID(String coachID) {
         this.coachID = coachID;
     }
 
@@ -39,15 +38,15 @@ public class Coach {
         this.lastName = lastName;
     }
 
-    public void setSportID(int sportID) {
+    public void setSportID(String sportID) {
         this.sportID = sportID;
     }
 
-    public int getSportID() {
+    public String getSportID() {
         return sportID;
     }
 
-    public int getCoachID() {
+    public String getCoachID() {
         return coachID;
     }
 
@@ -59,31 +58,42 @@ public class Coach {
         return lastName;
     }
 
-    public int generateCoachID(){
-        int counter = 0;
-        String query = "SELECT COACHID FROM COACH ORDER BY COACHID DESC LIMIT 1";
+    public String getLastCoachID(){
+        String lastID;
+        String query = "SELECT COACH_ID FROM COACHES ORDER BY COACH_ID DESC LIMIT 1";
         try {
             con = SetConnection.getConnection();
             statement = con.prepareStatement(query);
             resultSet = statement.executeQuery();
             resultSet.next();
-            counter = resultSet.getInt(1);
-        }
-        catch (SQLException e) {
+            lastID = resultSet.getString("coach_ID");
+
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return counter + 1;
+        return lastID;
+    }
+
+    public String generateCoachID(){
+        String lastCoachID = getLastCoachID();
+        StringBuffer getNumber = new StringBuffer();
+        for(int i = 0; i < lastCoachID.length(); i++){
+            if(Character.isDigit(lastCoachID.charAt(i)))
+            getNumber.append(lastCoachID.charAt(i));
+        }
+        return "C" + String.format("%06d", Integer.parseInt(String.valueOf(getNumber)) + 1);
 
     }
 
+
     public void getCoachList() throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
-        String query = "SELECT * FROM COACH";
+        String query = "SELECT * FROM COACHES";
         try {
             con = SetConnection.getConnection();
             statement = con.prepareStatement(query);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                coaches.add(new Coach(resultSet.getInt("coachID"), resultSet.getString("firstName"), resultSet.getString("lastName"), resultSet.getInt("sportID")));
+                coaches.add(new Coach(resultSet.getString("coach_ID"), resultSet.getString("firstName"), resultSet.getString("lastName"), resultSet.getString("sport_ID")));
 
             }
             System.out.printf("%-15s%-25s%-20s%-12s%n", "CoachID", "FirstName", "LASTNAME", "SporstID");
@@ -94,15 +104,15 @@ public class Coach {
             throw new RuntimeException(e);
         }
     }
-    public boolean coachExists(int coachID){
-        String query = "SELECT * FROM COACH";
+    public boolean coachExists(String coachID){
+        String query = "SELECT * FROM COACHES";
         try {
             con = SetConnection.getConnection();
             statement = con.prepareStatement(query);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                int  s = resultSet.getInt("coachID");
-                if (s == coachID)
+                String  s = resultSet.getString("coach_ID");
+                if (s.equals(coachID))
                     return true;
             }
         } catch (SQLException e) {
@@ -117,17 +127,15 @@ public class Coach {
         }
         else if(sports.sportsExists(coach.getSportID()) == false){
             System.out.println("These is no sports with ID number " + coach.getSportID() +  " in the database;");
-        } else if (sports.sportsExists(coach.getSportID()) == true) {
-            System.out.println("The sports is already supervised by a coach.");
         } else {
-            String query = "INSERT INTO `coach` (`coachID`, `firstName`, `lastName`, `sportID`) VALUES (?, ?, ?, ? );";
+            String query = "INSERT INTO `coaches` (`coach_ID`, `first_name`, `last_name`, `sport_ID`) VALUES (?, ?, ?, ? );";
             try {
                 con = SetConnection.getConnection();
                 statement = con.prepareStatement(query);
-                statement.setInt(1, coach.getCoachID());
+                statement.setString(1, coach.getCoachID());
                 statement.setString(2, coach.getFirstName());
                 statement.setString(3, coach.getLastName());
-                statement.setInt(4, coach.getSportID());
+                statement.setString(4, coach.getSportID());
                 statement.execute();
                 System.out.println("Coach " + coach.getFirstName() + " " + coach.getLastName() + " is successfully added to the database.");
             } catch (SQLException e) {
@@ -144,14 +152,14 @@ public class Coach {
 
         }
         else{
-            String query = "UPDATE COACH SET FIRSTNAME = ?, LASTNAME = ?, SPORTID = ?  WHERE COACHID = ? ";
+            String query = "UPDATE COACHES SET FIRST_NAME = ?, LAST_NAME = ?, SPORT_ID = ?  WHERE COACH_ID = ? ";
             try{
                 con = SetConnection.getConnection();
                 statement = con.prepareStatement(query);
                 statement.setString(1, coach.getFirstName());
                 statement.setString(2, coach.getLastName());
-                statement.setInt(3, coach.getSportID());
-                statement.setInt(4, coach.getCoachID());
+                statement.setString(3, coach.getSportID());
+                statement.setString(4, coach.getCoachID());
                 statement.executeUpdate();
                 System.out.println("Data for Coach " + coach.getCoachID() + " is successfully updated.");
             } catch (SQLException e) {
@@ -160,17 +168,17 @@ public class Coach {
         }
     }
     public String searchCoach(int coachID) {
-        String query = "SELECT * FROM COACH WHERE COACHID = ?;";
+        String query = "SELECT * FROM COACHES WHERE COACH_ID = ?;";
         try {
             con = SetConnection.getConnection();
             statement = con.prepareStatement(query);
             statement.setInt(1, coachID);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                int id = resultSet.getInt("coachID");
-                String f = resultSet.getString("firstName");
-                String l = resultSet.getString("lastName");
-                int s = resultSet.getInt("sportID");
+                String id = resultSet.getString("coach_ID");
+                String f = resultSet.getString("first_name");
+                String l = resultSet.getString("last_name");
+                String s = resultSet.getString("sport_ID");
                 System.out.println("Search result for coach ID " + coachID + ":");
                 System.out.printf("%-15s%-25s%-20s%-12s%n", "CoachID", "FirstName", "LASTNAME", "SportID");
                 return "" + new Coach(id, f, l, s);
@@ -183,19 +191,18 @@ public class Coach {
     }
 
     public void showCoachList(){
-        String query = "SELECT COACHID, FIRSTNAME, LASTNAME, COACH.SPORTID, SPORT.SPORTDESCRIPTION FROM COACH, SPORT WHERE COACH.SPORTID=SPORT.SPORTID";
+        String query = "SELECT * FROM COACHES";
         try{
             con = SetConnection.getConnection();
             statement = con.prepareStatement(query);
             resultSet = statement.executeQuery();
-            System.out.printf("%-15s%-15s%-15s%-15s%-15s%n", "CoachID", "FirstName", "LastName", "SportsID", "SportDescription");
+            System.out.printf("%-15s%-15s%-15s%-15s%n", "CoachID", "FirstName", "LastName", "SportsID");
             while(resultSet.next()){
-                int cID = resultSet.getInt(1);
+                String cID = resultSet.getString(1);
                 String f = resultSet.getString(2);
                 String l = resultSet.getString(3);
-                int sID = resultSet.getInt(4);
-                String d = resultSet.getString(5);
-                System.out.printf("%-15s%-15s%-15s%-15s%-15s%n", cID, f, l, sID, d);
+                String sID = resultSet.getString(4);
+                System.out.printf("%-15s%-15s%-15s%-15s%n", cID, f, l, sID);
             }
             statement.close();
             con.close();
@@ -227,4 +234,5 @@ public class Coach {
     public String toString() {
         return String.format("%-15s%-25s%-20s%-12s%n", coachID, firstName, lastName.toUpperCase(), sportID);
     }
+
 }

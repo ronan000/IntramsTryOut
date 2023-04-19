@@ -1,23 +1,27 @@
 package objects.org;
 
 import objects.Coach;
+import objects.SetConnection;
 import objects.Student;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Organizer {
-    private String orgName, password;
+    private String orgName;
+    private int password;
     private Scanner keyboard = new Scanner(System.in);
+    private Connection con = null;
+    private PreparedStatement statement = null;
+    private ResultSet resultSet = null;
 
     public Organizer() {
     }
 
-    public Organizer(String orgName, String password) {
+    public Organizer(String orgName, int password) {
         this.orgName = orgName;
         this.password = password;
     }
@@ -26,7 +30,7 @@ public class Organizer {
         return orgName;
     }
 
-    public String getPassword() {
+    public int getPassword() {
         return password;
     }
 
@@ -34,32 +38,36 @@ public class Organizer {
         this.orgName = orgName;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(int password) {
         this.password = password;
     }
 
-    public boolean logIn(String orgName, String password){
-        String name, pass;
+    public boolean logIn(Organizer credentials){
+        String query = "SELECT * FROM ORGANIZER";
         try {
-            name = Files.readAllLines(Paths.get("src/res/data/orgcredentials.txt")).get(0);
-            pass = Files.readAllLines(Paths.get("src/res/data/orgcredentials.txt")).get(1);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+            con = SetConnection.getConnection();
+            statement = con.prepareStatement(query);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                String u = resultSet.getString("username");
+                int p = resultSet.getInt("org_password");
+                if (u.equalsIgnoreCase(credentials.getOrgName()) && p == credentials.getPassword())
+                    return true;
+            }
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return orgName.equals(name) && password.equals(pass);
+        return false;
     }
 
     public void organizerMenu() {
         System.out.println("\n\t\t\t\tORGANIZER MENU\n" +
                 "[1] Students\n" +
                 "[2] Players\n" +
-                "[3] Teams\n" +
-                "[4] Coaches\n" +
-                "[5] Sports\n" +
-                "[6] Game Schedule\n" +
-                "[7] Exit\n" +
+                "[3] Coaches\n" +
+                "[4] Sports\n" +
+                "[5] Game Schedule\n" +
+                "[6] Exit\n" +
                 "Select the number of table: ");
         String t = keyboard.nextLine();
         switchTables(t);
@@ -73,22 +81,19 @@ public class Organizer {
                 playerSubmenu();
                 break;
             case "3":
-                teamSubmenu();
-                break;
-            case "4":
                 coachSubmenu();
                 break;
-            case "5":
+            case "4":
                 sportsSubmenu();
                 break;
-            case "6":
+            case "5":
                 try {
                     GameSchedule gameSchedule = new GameSchedule();
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
                 break;
-            case "7":
+            case "6":
                 System.out.println("Thank you for using the app.");
                 System.exit(0);
                 break;
@@ -125,6 +130,8 @@ public class Organizer {
                 student.setGender(keyboard.nextLine());
                 System.out.print("Enter Course: ");
                 student.setCourse(keyboard.nextLine());
+                System.out.print("Enter Year: ");
+                student.setCourseYear(Integer.parseInt(keyboard.nextLine()));
                 student.registerStudent(student);
                 organizerMenu();
                 break;
@@ -155,6 +162,8 @@ public class Organizer {
                 student.setGender(keyboard.nextLine());
                 System.out.print("Enter course: ");
                 student.setCourse(keyboard.nextLine());
+                System.out.print("Enter Year: ");
+                student.setCourseYear(Integer.parseInt(keyboard.nextLine()));
                 System.out.print("Enter new ID number: ");
                 String newID = keyboard.nextLine();
                 student.updateStudentData(student, Integer.parseInt(newID));
@@ -203,11 +212,7 @@ public class Organizer {
                 player.setStudentID(Integer.parseInt(keyboard.nextLine()));
                 player.setPlayerID(player.generatePlayerID());
                 System.out.print("Enter Sports ID number: ");
-                player.setSportID(Integer.parseInt(keyboard.nextLine()));
-                System.out.print("Enter Coach ID: ");
-                player.setCoachID(Integer.parseInt(keyboard.nextLine()));
-                System.out.print("Enter Team ID: ");
-                player.setTeamID(Integer.parseInt(keyboard.nextLine()));
+                player.setSportID(keyboard.nextLine());
                 player.acceptPlayers(player);
                 organizerMenu();
                 break;
@@ -220,12 +225,8 @@ public class Organizer {
                 System.out.println("UPDATE PLAYER DATA");
                 System.out.print("Enter player ID number to update: ");
                 player.setPlayerID(keyboard.nextLine());
-                System.out.print("Enter new coach ID: ");
-                player.setCoachID(Integer.parseInt(keyboard.nextLine()));
                 System.out.print("Enter new sport ID: ");
-                player.setSportID(Integer.parseInt(keyboard.nextLine()));
-                System.out.print("Enter new team ID: ");
-                player.setTeamID(Integer.parseInt(keyboard.nextLine()));
+                player.setSportID(keyboard.nextLine());
                 player.updatePlayerData(player);
                 organizerMenu();
                 break;
@@ -321,7 +322,7 @@ public class Organizer {
                 System.out.print("Enter last name: ");
                 coach.setLastName(keyboard.nextLine());
                 System.out.print("Enter sports ID: ");
-                coach.setSportID(Integer.parseInt(keyboard.nextLine()));
+                coach.setSportID(keyboard.nextLine());
                 coach.setCoachID(coach.generateCoachID());
                 coach.addCoach(coach);
                 organizerMenu();
@@ -334,13 +335,13 @@ public class Organizer {
             case "3":
                 System.out.println("UPDATE COACH DATA");
                 System.out.print("Enter coach ID number to update: ");
-                coach.setCoachID(Integer.parseInt(keyboard.nextLine()));
+                coach.setCoachID(keyboard.nextLine());
                 System.out.print("Enter new first name: ");
                 coach.setFirstName(keyboard.nextLine());
                 System.out.print("Enter new last name: ");
                 coach.setLastName(keyboard.nextLine());
                 System.out.print("Enter sports ID number: ");
-                coach.setSportID(Integer.parseInt(keyboard.nextLine()));
+                coach.setSportID(keyboard.nextLine());
                 coach.updateCoach(coach);
                 organizerMenu();
                 break;
@@ -375,13 +376,13 @@ public class Organizer {
         switch (option) {
             case "1":
                 System.out.println("ADD SPORTS");
-                sports.setSportsID(sports.generateSportsID());
                 System.out.print("Enter Sports Description: ");
                 sports.setSportsDesc(keyboard.nextLine());
                 System.out.print("Enter Sports Category: ");
                 sports.setSportsCat(keyboard.nextLine());
                 System.out.print("Enter Sports Type: ");
                 sports.setSportType(keyboard.nextLine());
+                sports.setSportsID(sports.generateSportsID(sports));
                 sports.addSports(sports);
                 organizerMenu();
                 break;
@@ -409,7 +410,7 @@ public class Organizer {
             case "4":
                 System.out.println("REMOVE A SPORTS");
                 System.out.print("Enter the sports ID to remove: ");
-                sports.removeSports(Integer.parseInt(keyboard.nextLine()));
+                sports.removeSports(keyboard.nextLine());
                 organizerMenu();
                 break;
             case "5":

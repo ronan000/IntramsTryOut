@@ -19,9 +19,6 @@ public class IntramsTryout {
         loginAs(keyboard.nextLine());
     }
 
-    /*
-    USERNAME AND PASSWORD IS IN src/res/data/orgcredentials.txt
-     */
     public static void loginAs(String choice){
         Scanner keyboard = new Scanner(System.in);
         switch (choice){
@@ -32,7 +29,8 @@ public class IntramsTryout {
                 String u = keyboard.nextLine();
                 System.out.print("Enter password: ");
                 String p = keyboard.nextLine();
-                if(o.logIn(u, p) == true){
+                Organizer org = new Organizer(u,Integer.parseInt(p));
+                if(org.logIn(org) == true){
                     System.out.println("\tSuccessfully logged in as ORGANIZER!\n");
                     o.organizerMenu();
                 }

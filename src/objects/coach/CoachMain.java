@@ -63,16 +63,19 @@ public class CoachMain {
     }
 
     public boolean login(int coachID) {
-        String query = "SELECT * FROM COACH WHERE COACHID=?";
+        String query = "SELECT * FROM COACHES WHERE COACH_ID=?";
         try {
             con = SetConnection.getConnection();
             statement = con.prepareStatement(query);
             statement.setInt(1,coachID);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                int  s = resultSet.getInt("coachID");
+                int  s = resultSet.getInt("coach_ID");
                 if (s == coachID)
                     return true;
+                else{
+                    System.out.println("Invalid coach ID.");
+                }
             }
             statement.close();
             con.close();

@@ -90,7 +90,7 @@ public class GameSchedule {
         Scanner st = new Scanner(System.in);
         Scanner num = new Scanner(System.in);
         int choices;
-        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/tryouts", "root", "");
+        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/teammatcha", "root", "");
         Statement stat = con.createStatement();
         ResultSet rs = stat.executeQuery("select * from gameschedule");
 
