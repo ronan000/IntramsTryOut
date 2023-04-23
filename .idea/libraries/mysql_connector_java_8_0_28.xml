@@ -3,7 +3,9 @@
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/../mysql-connector-java-8.0.28.jar!/" />
     </CLASSES>
-    <JAVADOC />
+    <JAVADOC>
+      <root url="https://mvnrepository.com/artifact/mysql/mysql-connector-java" />
+    </JAVADOC>
     <SOURCES />
   </library>
 </component>

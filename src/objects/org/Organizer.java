@@ -8,6 +8,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 
 public class Organizer {
@@ -66,7 +69,7 @@ public class Organizer {
                 "[2] Players\n" +
                 "[3] Coaches\n" +
                 "[4] Sports\n" +
-                "[5] Game Schedule\n" +
+                "[5] First Game Assessment Schedule\n" +
                 "[6] Exit\n" +
                 "Select the number of table: ");
         String t = keyboard.nextLine();
@@ -88,8 +91,8 @@ public class Organizer {
                 break;
             case "5":
                 try {
-                    GameSchedule gameSchedule = new GameSchedule();
-                } catch (SQLException e) {
+                    firstGameSubmenu();
+                } catch (ParseException e) {
                     throw new RuntimeException(e);
                 }
                 break;
@@ -252,43 +255,100 @@ public class Organizer {
 
     }
 
-    public void teamSubmenu(){
-        System.out.println("\t\tTeams Table\n" +
-                "[1] Create Team\n" +
-                "[2] Show List of Teams\n" +
-                "[3] Search Team\n" +
-                "[4] Remove a Team\n" +
+    public void firstGameSubmenu() throws ParseException {
+        System.out.println("\t\tFirst Game Assessment Table\n" +
+                "[1] Add First Game Assessment Schedule\n" +
+                "[2] Show List of First Game Assessment Schedule\n" +
+                "[3] Update First Game Assessment Schedule\n" +
+                "[4] Remove a First Game Assessment Schedule\n" +
                 "[5] Back\n" +
                 "Enter the number of option: ");
-        teamCRUD(keyboard.nextLine());
+        firstGameCRUD(keyboard.nextLine());
     }
 
-    public void teamCRUD(String option){
-        Team team = new Team();
+    public void firstGameCRUD(String option) throws ParseException {
+        Player p = new Player();
+        GamesFirstAssessment firstAssessment = new GamesFirstAssessment();
         switch (option){
             case "1":
-                System.out.println("ADD TEAM");
-                team.setTeamID(team.generateTeamID());
-                System.out.print("Enter team name: ");
-                team.setTeamName(keyboard.nextLine());
-                team.addTeam(team);
+                System.out.println("ADD FIRST GAME ASSESSMENT SCHEDULE");
+                System.out.print("Enter Player Number: ");
+                String pNum = keyboard.nextLine();
+                if(firstAssessment.firstGameExists(firstAssessment.getPlayerNum()) == true || p.playerExists(pNum) == true){
+                    firstAssessment.setPlayerNum(pNum);
+                    firstAssessment.setGameID(firstAssessment.generateGameID(pNum));
+                    System.out.print("Enter Date (mm/dd/yyyy): ");
+                    String d = keyboard.nextLine();
+                    if(firstAssessment.isValidDate(d) == true){
+                        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+                        Date date = format.parse(d);
+                        firstAssessment.setGameDate(date);
+                        System.out.print("Enter Game Result (win/lose/pend): ");
+                        firstAssessment.setResult(keyboard.nextLine());
+                        firstAssessment.addGamesFirstAssessment(firstAssessment);
+                        organizerMenu();
+                    }
+                    else{
+                        System.out.println("Invalid date format.");
+                        organizerMenu();
+                    }
+                }
+                else{
+                    System.out.println("Player number " + pNum + " does not exists.");
+                    organizerMenu();
+                }
                 organizerMenu();
                 break;
             case "2":
-                System.out.println("SHOW LIST OF TEAMS");
-                team.showTeamList();
+                System.out.println("SHOW LIST OF FIRST GAME ASSESSMENT SCHEDULE");
+                firstAssessment.firstGameAssessmentList();
                 organizerMenu();
                 break;
             case "3":
-                System.out.println("SEARCH TEAM");
-                System.out.print("Search team name: ");
-                System.out.println(team.searchTeam(keyboard.nextLine()));
+                System.out.println("UPDATE FIRST GAME ASSESSMENT SCHEDULE");
+                System.out.println("\t[1] Update Date\n\t[2] Update Result");
+                System.out.println("Enter number of option: ");
+                String res = keyboard.nextLine();
+                switch (res){
+                    case "1":
+                        System.out.println("\t\tUpdate Game Schedule Date");
+                        System.out.print("Enter the Player Number: ");
+                        firstAssessment.setPlayerNum(keyboard.nextLine());
+                        System.out.print("Enter Date (mm/dd/yyyy): ");
+                        String dt= keyboard.nextLine();
+                        if(firstAssessment.isValidDate(dt) == true){
+                            SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+                            Date date = format.parse(dt);
+                            firstAssessment.setGameDate(date);
+                            firstAssessment.updateFirstGameDate(firstAssessment);
+                            organizerMenu();
+                        }
+                        else{
+                            System.out.println("Invalid date format.");
+                        }
+                        break;
+                    case "2":
+                        System.out.println("\t\tUpdate Game Remark");
+                        System.out.print("Enter the Player Number: ");
+                        firstAssessment.setPlayerNum(keyboard.nextLine());
+                        System.out.print("Enter Game Result (win/lose/pend): ");
+                        firstAssessment.setResult(keyboard.nextLine());
+                        firstAssessment.updateFirstGameRemark(firstAssessment);
+                        organizerMenu();
+                        break;
+                    default:
+                        System.out.println("Invalid input.");
+                        organizerMenu();
+                        break;
+                }
+
                 organizerMenu();
                 break;
             case "4":
-                System.out.println("REMOVE A TEAM");
-                System.out.print("Enter the team name to remove: ");
-                team.removeTeam(keyboard.nextLine());
+                System.out.println("REMOVE A FIRST GAME ASSESSMENT SCHEDULE");
+                System.out.print("Enter Player Number to remove Schedule: ");
+                firstAssessment.setPlayerNum(keyboard.nextLine());
+                firstAssessment.removeFirstGameSchedule(firstAssessment);
                 organizerMenu();
                 break;
             case "5":
@@ -306,7 +366,8 @@ public class Organizer {
                 "[2] Show List of Coaches\n" +
                 "[3] Update Coach Data\n" +
                 "[4] Search Coach\n" +
-                "[5] Back\n" +
+                "[5] Remove a Coach\n" +
+                "[6] Back\n" +
                 "Enter the number of option: ");
         coachCRUD(keyboard.nextLine());
     }
@@ -352,6 +413,12 @@ public class Organizer {
                 organizerMenu();
                 break;
             case "5":
+                System.out.println("REMOVE COACH");
+                System.out.print("Enter the coach ID to remove: ");
+                coach.removeCoach(keyboard.nextLine());
+                organizerMenu();
+                break;
+            case "6":
                 organizerMenu();
                 break;
             default:
@@ -382,6 +449,8 @@ public class Organizer {
                 sports.setSportsCat(keyboard.nextLine());
                 System.out.print("Enter Sports Type: ");
                 sports.setSportType(keyboard.nextLine());
+                System.out.print("Enter the Sports Venue: ");
+                sports.setVenue(keyboard.nextLine());
                 sports.setSportsID(sports.generateSportsID(sports));
                 sports.addSports(sports);
                 organizerMenu();

@@ -82,9 +82,7 @@ public class Coach {
             getNumber.append(lastCoachID.charAt(i));
         }
         return "C" + String.format("%06d", Integer.parseInt(String.valueOf(getNumber)) + 1);
-
     }
-
 
     public void getCoachList() throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
         String query = "SELECT * FROM COACHES";
@@ -103,6 +101,24 @@ public class Coach {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean sportsIsSupervised(String sportsID){
+        String query = "SELECT * FROM COACHES;";
+        try{
+            con = SetConnection.getConnection();
+            statement = con.prepareStatement(query);
+            resultSet = statement.executeQuery();
+            while(resultSet.next()){
+                String id = resultSet.getString("sport_ID");
+                if(sportsID.equalsIgnoreCase(id))
+                    return true;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+
     }
     public boolean coachExists(String coachID){
         String query = "SELECT * FROM COACHES";
@@ -125,9 +141,13 @@ public class Coach {
         if(coachExists(coach.getCoachID()) == true){
             System.out.println(coach.getFirstName() + " " + coach.getLastName() + " is already registered as a coach.");
         }
-        else if(sports.sportsExists(coach.getSportID()) == false){
+        else if(sports.sportsIDExists(coach.getSportID()) == false){
             System.out.println("These is no sports with ID number " + coach.getSportID() +  " in the database;");
-        } else {
+        }
+        else if(sportsIsSupervised(coach.getSportID()) == true){
+            System.out.println("Sports is already supervised by another coach.");
+        }
+        else {
             String query = "INSERT INTO `coaches` (`coach_ID`, `first_name`, `last_name`, `sport_ID`) VALUES (?, ?, ?, ? );";
             try {
                 con = SetConnection.getConnection();
@@ -212,12 +232,12 @@ public class Coach {
     }
 
 
-    /*public void removeCoach(int coachID){
+    public void removeCoach(String coachID){
         if(coachExists(coachID) == false){
             System.out.println("There is no coach with an ID number " + coachID + " in the database" );
         }
         else {
-            String query = "DELETE FROM COACH WHERE COACHID = ?";
+            String query = "DELETE FROM COACHES WHERE COACH_ID = ?";
             try {
                 con = SetConnection.getConnection();
                 statement = con.prepareStatement(query);
@@ -228,7 +248,7 @@ public class Coach {
                 throw new RuntimeException(e);
             }
         }
-    }*/
+    }
 
     @Override
     public String toString() {
