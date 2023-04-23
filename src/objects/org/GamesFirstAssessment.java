@@ -301,9 +301,4 @@ public class GamesFirstAssessment {
     public String toString() {
         return String.format("%-15s%-15s%-15s%-15s%n", gameID, playerNum, gameDate, result);
     }
-
-    public static void main(String[] args) {
-        GamesFirstAssessment f = new GamesFirstAssessment();
-        System.out.println(f.isValidDate("10-02-2023"));
-    }
 }

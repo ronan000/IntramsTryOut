@@ -227,7 +227,6 @@ public class Student {
 
     }
 
-
     @Override
     public String toString() {
         return String.format("%-15s%-25s%-20s%-10s%-25s%-15s%n", ID, firstName, lastName.toUpperCase(), gender, course, courseYear);
