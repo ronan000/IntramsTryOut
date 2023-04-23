@@ -1,7 +1,7 @@
 package objects.coach;
 
 import objects.SetConnection;
-import objects.Student;
+import objects.org.Student;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

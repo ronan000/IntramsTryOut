@@ -60,8 +60,4 @@ public class GameResult {
         return String.format("%-15s%-15s%-15s%-15s%-15s%n", gameID, teamID, wins, losses, sportID);
     }
 
-    public void modifyGameResult(){
-        //String query
-    }
-
 }

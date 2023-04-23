@@ -1,5 +1,6 @@
-package objects;
+package objects.coach;
 
+import objects.SetConnection;
 import objects.org.Sports;
 
 import java.sql.Connection;
@@ -187,12 +188,12 @@ public class Coach {
             }
         }
     }
-    public String searchCoach(int coachID) {
+    public String searchCoach(String coachID) {
         String query = "SELECT * FROM COACHES WHERE COACH_ID = ?;";
         try {
             con = SetConnection.getConnection();
             statement = con.prepareStatement(query);
-            statement.setInt(1, coachID);
+            statement.setString(1, coachID);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 String id = resultSet.getString("coach_ID");

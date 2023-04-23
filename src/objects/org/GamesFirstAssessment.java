@@ -215,6 +215,28 @@ public class GamesFirstAssessment {
         }
     }
 
+    public String searchFirstGameAssess(String playerNum){
+        String query = "SELECT * FROM FIRSTGAMEASSESS WHERE PLAYER_NUM = ? ";
+        try{
+            con = SetConnection.getConnection();
+            statement = con.prepareStatement(query);
+            statement.setString(1, playerNum);
+            resultSet = statement.executeQuery();
+            while(resultSet.next()){
+                String gID = resultSet.getString("game_ID");
+                String pID = resultSet.getString("player_num");
+                Date d = resultSet.getDate("game_date");
+                String r = resultSet.getString("results");
+                System.out.println("Search result: ");
+                System.out.printf("%-15s%-15s%-15s%-15s%n", "GameID", "PlayerNum", "GameDate", "Result");
+                return "" + new GamesFirstAssessment(gID, pID, d, r);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return "There is no schedule for player number: " + playerNum + " in the database.";
+    }
+
     public void updateFirstGameDate(GamesFirstAssessment gamesFirstAssessment){
         Date current = new Date();
         if(firstGameExists(gamesFirstAssessment.getPlayerNum()) == false){

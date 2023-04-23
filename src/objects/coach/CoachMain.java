@@ -1,6 +1,7 @@
 package objects.coach;
 
 import objects.SetConnection;
+import objects.org.GamesFirstAssessment;
 import objects.org.Player;
 
 import java.sql.Connection;
@@ -62,16 +63,16 @@ public class CoachMain {
         return coachID + ": " + firstName + lastName + " | Sport: " + sportID;
     }
 
-    public boolean login(int coachID) {
+    public boolean login(String coachID) {
         String query = "SELECT * FROM COACHES WHERE COACH_ID=?";
         try {
             con = SetConnection.getConnection();
             statement = con.prepareStatement(query);
-            statement.setInt(1,coachID);
+            statement.setString(1,coachID);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                int  s = resultSet.getInt("coach_ID");
-                if (s == coachID)
+                String  s = resultSet.getString("coach_ID");
+                if (s.equalsIgnoreCase(coachID))
                     return true;
                 else{
                     System.out.println("Invalid coach ID.");
@@ -85,17 +86,17 @@ public class CoachMain {
         return false;
     }
 
-    public void coachInfo(int coachID){
-        String query = "SELECT COACH.FIRSTNAME, COACH.LASTNAME, SPORT.SPORTDESCRIPTION FROM COACH, SPORT WHERE COACH.COACHID=? AND SPORT.SPORTID=COACH.SPORTID;";
+    public void coachInfo(String coachID){
+        String query = "SELECT COACHES.FIRST_NAME, COACHES.LAST_NAME, SPORTS.SPORT_NAME FROM COACHES, SPORTS WHERE COACHES.COACH_ID=? AND SPORTS.SPORT_ID=COACHES.SPORT_ID;";
         try{
             con = SetConnection.getConnection();
             statement = con.prepareStatement(query);
-            statement.setInt(1, coachID);
+            statement.setString(1, coachID);
             resultSet = statement.executeQuery();
             while (resultSet.next()){
-                String f = resultSet.getString("firstName");
-                String l = resultSet.getString("lastName");
-                String d = resultSet.getString("sportDescription");
+                String f = resultSet.getString("first_name");
+                String l = resultSet.getString("last_name");
+                String d = resultSet.getString("sport_name");
                 System.out.println("Welcome, Coach " + f + " " + l + "!");
                 System.out.println("Sport: " + d);
             }
@@ -122,15 +123,16 @@ public class CoachMain {
                     viewPlayers();
                     break;
                 case "2":
-                    gameResults();
+                    GamesFirstAssessment g = new GamesFirstAssessment();
+                    g.firstGameAssessmentList();
                     break;
                 case "3":
-                    FirstAssessmentGames f = new FirstAssessmentGames();
-                    System.out.print("Enter Team ID to update: ");
-                    String t = scanner.nextLine();
-                    System.out.print("Enter Remark: ");
-                    String r = scanner.nextLine();
-                    f.updateRemark(Integer.parseInt(t), r);
+                    GamesFirstAssessment firstAssessment = new GamesFirstAssessment();
+                    System.out.print("Enter the Player Number: ");
+                    firstAssessment.setPlayerNum(scanner.nextLine());
+                    System.out.print("Enter Game Result (win/lose/pend): ");
+                    firstAssessment.setResult(scanner.nextLine());
+                    firstAssessment.updateFirstGameRemark(firstAssessment);
                     break;
                 case "4":
                     System.out.println("Thank you for using the system! :)");
@@ -138,6 +140,7 @@ public class CoachMain {
                     break;
                 default:
                     System.out.println("Please choose from the given choices ONLY.");
+                    break;
             }
         } while (true);
     }
@@ -147,30 +150,4 @@ public class CoachMain {
         p.showPlayerList();
     }
 
-    public void gameResults() {
-        String query = "SELECT * FROM GAMERESULTS;";
-
-        try{
-            con = SetConnection.getConnection();
-            statement = con.prepareStatement(query);
-            resultSet = statement.executeQuery();
-            System.out.printf("%-15s%-15s%-15s%-15s%-15s%n", "GameID", "TeamID", "Wins", "Losses", "SportID");
-            while(resultSet.next()){
-                String gID = resultSet.getString(1);
-                int tID = resultSet.getInt(2);
-                int w = resultSet.getInt(3);
-                int l = resultSet.getInt(4);
-                int sID = resultSet.getInt(5);
-                System.out.printf("%-15s%-15s%-15s%-15s%-15s%n", gID, tID, w, l, sID);
-            }
-            statement.close();
-            con.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void viewGames() {
-
-    }
 }

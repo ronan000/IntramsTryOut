@@ -1,8 +1,7 @@
 package objects.org;
 
-import objects.Coach;
+import objects.coach.Coach;
 import objects.SetConnection;
-import objects.Student;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -261,7 +260,8 @@ public class Organizer {
                 "[2] Show List of First Game Assessment Schedule\n" +
                 "[3] Update First Game Assessment Schedule\n" +
                 "[4] Remove a First Game Assessment Schedule\n" +
-                "[5] Back\n" +
+                "[5] Search a First Game Assessment Schedule\n" +
+                "[6] Back\n" +
                 "Enter the number of option: ");
         firstGameCRUD(keyboard.nextLine());
     }
@@ -352,6 +352,12 @@ public class Organizer {
                 organizerMenu();
                 break;
             case "5":
+                System.out.println("SEARCH A FIRST GAME ASSESSMENT SCHEDULE");
+                System.out.print("Enter Player Number to search schedule: ");
+                System.out.println(firstAssessment.searchFirstGameAssess(keyboard.nextLine()));
+                organizerMenu();
+                break;
+            case "6":
                 organizerMenu();
                 break;
             default:
@@ -409,7 +415,7 @@ public class Organizer {
             case "4":
                 System.out.println("SEARCH COACH");
                 System.out.print("Enter the coach ID number to search: ");
-                System.out.println(coach.searchCoach(Integer.parseInt(keyboard.nextLine())));
+                System.out.println(coach.searchCoach(keyboard.nextLine()));
                 organizerMenu();
                 break;
             case "5":

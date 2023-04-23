@@ -43,7 +43,7 @@ public class IntramsTryout {
                 System.out.println("\t\tLOGIN AS COACH");
                 CoachMain c = new CoachMain();
                 System.out.print("Enter ID Number: ");
-                int coachID = keyboard.nextInt();
+                String coachID = keyboard.nextLine();
                 if (c.login(coachID) == true) {
                     System.out.println("\tSuccessfully logged in as COACH!\n");
                     c.coachInfo(coachID);

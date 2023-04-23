@@ -1,7 +1,6 @@
 package objects.org;
 
 import objects.SetConnection;
-import objects.Student;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -210,7 +209,7 @@ public class Player {
     }
 
     public String showPlayerList() {
-        String query = "SELECT * FROM PLAYERLIST";
+        String query = "SELECT * FROM REGISTEREDPLAYERS";
         try {
             con = SetConnection.getConnection();
             statement = con.prepareStatement(query);

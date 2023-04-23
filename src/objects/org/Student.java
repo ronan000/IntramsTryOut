@@ -1,4 +1,6 @@
-package objects;
+package objects.org;
+
+import objects.SetConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -64,6 +64,44 @@ public class Sports {
         this.sportType = sportType.substring(0,1).toUpperCase() + sportType.substring(1);
     }
 
+    public int insertNew(){
+        String q = "SELECT COUNT(*) FROM SPORTS";
+        try{
+            con = SetConnection.getConnection();
+            statement = con.prepareStatement(q);
+            resultSet = statement.executeQuery();
+            resultSet.next();
+            int total = resultSet.getInt(1);
+            return total;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public int getLastSportsID(){
+        insertNew();
+        if(insertNew() == 0){
+            return insertNew();
+        }
+        else {
+            StringBuilder lastValue = new StringBuilder();
+            String query = "SELECT SPORT_ID FROM SPORTS ORDER BY SPORT_ID DESC LIMIT 1";
+            try {
+                con = SetConnection.getConnection();
+                statement = con.prepareStatement(query);
+                resultSet = statement.executeQuery();
+                resultSet.next();
+                String d = resultSet.getString("sport_id");
+                lastValue.append(d.charAt(5));
+                lastValue.append(d.charAt(6));
+                con.close();
+                statement.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            return Integer.parseInt(String.valueOf(lastValue));
+        }
+    }
+
     public void getSportsList() throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
         String query = "SELECT * FROM SPORTS";
         try {
@@ -98,43 +136,43 @@ public class Sports {
     public String generateSportsID(Sports sports){
         if(sports.getSportType().equalsIgnoreCase("team's")){
             if(sports.getSportsCat().equalsIgnoreCase("women's")){
-                String letter = "B3" + String.format("%05d", countSports() + 1);
+                String letter = "B3" + String.format("%05d", getLastSportsID() + 1);
                 return letter;
             }
             else if(sports.getSportsCat().equalsIgnoreCase("men's")){
-                String letter = "A3" + String.format("%05d", countSports() + 1);
+                String letter = "A3" + String.format("%05d", getLastSportsID() + 1);
                 return letter;
             }
             else if(sports.getSportsCat().equalsIgnoreCase("mixed")){
-                String letter = "C3" + String.format("%05d", countSports() + 1);
+                String letter = "C3" + String.format("%05d", getLastSportsID() + 1);
                 return letter;
             }
         }
         else if(sports.getSportType().equalsIgnoreCase("double's")){
             if(sports.getSportsCat().equalsIgnoreCase("women's")){
-                String letter = "B2" + String.format("%05d", countSports() + 1);
+                String letter = "B2" + String.format("%05d", getLastSportsID() + 1);
                 return letter;
             }
             else if(sports.getSportsCat().equalsIgnoreCase("men's")){
-                String letter = "A2" + String.format("%05d", countSports() + 1);
+                String letter = "A2" + String.format("%05d", getLastSportsID() + 1);
                 return letter;
             }
             else if (sports.getSportsCat().equalsIgnoreCase("mixed")){
-                String letter = "C2" + String.format("%05d", countSports() + 1);
+                String letter = "C2" + String.format("%05d", getLastSportsID() + 1);
                 return letter;
             }
         }
         else if(sports.getSportType().equalsIgnoreCase("single's")){
             if(sports.getSportsCat().equalsIgnoreCase("women's")){
-                String letter = "B1" + String.format("%05d", countSports() + 1);
+                String letter = "B1" + String.format("%05d", getLastSportsID() + 1);
                 return letter;
             }
             else if(sports.getSportsCat().equalsIgnoreCase("men's")){
-                String letter = "A1" + String.format("%05d", countSports() + 1);
+                String letter = "A1" + String.format("%05d", getLastSportsID() + 1);
                 return letter;
             }
             else if (sports.getSportsCat().equalsIgnoreCase("mixed")){
-                String letter = "C1" + String.format("%05d", countSports() + 1);
+                String letter = "C1" + String.format("%05d", getLastSportsID() + 1);
                 return letter;
             }
         }
@@ -158,18 +196,17 @@ public class Sports {
         return false;
     }
 
-    public boolean sportsExists(String sportsID, String desc, String cat, String type){
+    public boolean sportsExists(String desc, String cat, String type){
         String query = "SELECT * FROM SPORTS";
         try{
             con = SetConnection.getConnection();
             statement = con.prepareStatement(query);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                String id = resultSet.getString("sport_ID");
                 String d = resultSet.getString("sport_name");
                 String c = resultSet.getString("category");
                 String t = resultSet.getString("sport_type");
-                if (id.equalsIgnoreCase(sportsID) && d.equalsIgnoreCase(desc) && c.equalsIgnoreCase(cat) && t.equalsIgnoreCase(type))
+                if ( d.equalsIgnoreCase(desc) == true && c.equalsIgnoreCase(cat) == true && t.equalsIgnoreCase(type) == true)
                     return true;
             }
         } catch (SQLException e) {
@@ -280,7 +317,7 @@ public class Sports {
 
 
     public void addSports(Sports sports){
-        if(sportsExists(sports.getSportsID(), sports.getSportsDesc(), sports.getSportsCat(), sports.getSportType()) == true || sportsNameExists(sports.getSportsDesc())){
+        if(sportsExists(sports.getSportsDesc(), sports.getSportsCat(), sports.getSportType()) == true){
             System.out.println("Sports already exist in the database.");
         }
         else if (isValidCategory(sports.getSportsCat()) == false && isValidSportType(sports.getSportType()) == false){
@@ -333,6 +370,6 @@ public class Sports {
 
     public static void main(String[] args) {
         Sports s = new Sports();
-        s.removeSports("B300005");
+        System.out.println(s.getLastSportsID());
     }
 }
